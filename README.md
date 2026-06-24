@@ -1,8 +1,6 @@
 # smart-project-blueprint-frontend
 AI-powered frontend platform for generating project blueprints, managing workflows, and accelerating software development.
-# Smart Project Blueprint Frontend
 
-Frontend application for Smart Project Blueprint, an AI-powered platform for project planning, blueprint generation, and workflow management.
 
 ## Tech Stack
 
