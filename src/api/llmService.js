@@ -1,0 +1,40 @@
+/**
+ * LLM Service
+ *
+ * Calls the local backend proxy to keep the API key server-side.
+ */
+
+// If your frontend and backend run on different ports, set the base URL.
+// In dev, the backend runs on port 8000.
+const BACKEND_API_URL = "http://localhost:8000/ai/invoke";
+
+/**
+ * Invoke an LLM with a prompt and return the text response.
+ * @param {{ prompt: string, model?: string }} params
+ * @returns {Promise<string>} The text response from the LLM
+ */
+export async function invokeLLM({ prompt, model = "claude_sonnet_4_6" }) {
+  const response = await fetch(BACKEND_API_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      prompt: prompt,
+      model: model,
+    }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(
+      errorData?.detail ||
+      `Backend API error: ${response.status} ${response.statusText}`
+    );
+  }
+
+  const data = await response.json();
+  
+  // The backend responds with { "text": "..." }
+  return data.text;
+}
