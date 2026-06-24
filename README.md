@@ -1,39 +1,39 @@
-**Welcome to your Base44 project** 
+# Smart Project Blueprint Frontend
 
-**About**
+Frontend application for Smart Project Blueprint, an AI-powered platform for project planning, blueprint generation, and workflow management.
 
-View and Edit  your app on [Base44.com](http://Base44.com) 
+## Tech Stack
 
-This project contains everything you need to run your app locally.
+- React / Next.js
+- TypeScript
+- Tailwind CSS
+- Axios
+- JWT Authentication
 
-**Edit the code in your local development environment**
+## Features
 
-Any change pushed to the repo will also be reflected in the Base44 Builder.
+- User Authentication
+- Dashboard
+- Project Management
+- AI Blueprint Generation
+- Task Tracking
 
-**Prerequisites:** 
+## Installation
 
-1. Clone the repository using the project's Git URL 
-2. Navigate to the project directory
-3. Install dependencies: `npm install`
-4. Create an `.env.local` file and set the right environment variables
-
+```bash
+npm install
+npm run dev
 ```
-VITE_BASE44_APP_ID=your_app_id
-VITE_BASE44_APP_BASE_URL=your_backend_url
 
-e.g.
-VITE_BASE44_APP_ID=cbef744a8545c389ef439ea6
-VITE_BASE44_APP_BASE_URL=https://my-to-do-list-81bfaad7.base44.app
+## Environment Variables
+
+Create a `.env` file and add:
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:8000
 ```
 
-Run the app: `npm run dev`
+## Project Status
 
-**Publish your changes**
+🚧 Currently under development.
 
-Open [Base44.com](http://Base44.com) and click on Publish.
-
-**Docs & Support**
-
-Documentation: [https://docs.base44.com/Integrations/Using-GitHub](https://docs.base44.com/Integrations/Using-GitHub)
-
-Support: [https://app.base44.com/support](https://app.base44.com/support)
