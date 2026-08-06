@@ -1,0 +1,13 @@
+export { default as LandingNavbar } from "./LandingNavbar";
+export { default as Hero } from "./Hero";
+export { default as LogoMarquee } from "./LogoMarquee";
+export { default as Stats } from "./Stats";
+export { default as Features } from "./Features";
+export { default as HowItWorks } from "./HowItWorks";
+export { default as Industries } from "./Industries";
+export { default as ReportIncludes } from "./ReportIncludes";
+export { default as Testimonials } from "./Testimonials";
+export { default as Pricing } from "./Pricing";
+export { default as CTABanner } from "./CTABanner";
+export { default as MyReports } from "./MyReports";
+export { default as LandingFooter } from "./LandingFooter";

@@ -1,0 +1,176 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700;800;900&family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,400&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Brand: Navy Blue + Emerald Green
+       Primary #0F172A · Royal Blue #1E3A8A · Emerald #10B981 · Bg #F8FAFC */
+    --background: 210 40% 98%;
+    --foreground: 222 47% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 224 64% 33%;
+    --primary-foreground: 0 0% 100%;
+    --primary-hover: 224 76% 48%;
+    --secondary: 215 25% 93%;
+    --secondary-foreground: 222 47% 18%;
+    --muted: 215 25% 93%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 152 55% 95%;
+    --accent-foreground: 160 84% 27%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 215 20% 88%;
+    --input: 215 20% 88%;
+    --ring: 224 64% 33%;
+    --chart-1: 224 64% 33%;
+    --chart-2: 160 84% 39%;
+    --chart-3: 222 47% 20%;
+    --chart-4: 224 76% 48%;
+    --chart-5: 173 58% 39%;
+    --radius: 0.75rem;
+    --font-heading: 'Playfair Display', serif;
+    --font-body: 'Inter', sans-serif;
+    --font-display: 'Playfair Display', serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 222 47% 7%;
+    --foreground: 210 40% 96%;
+    --card: 222 44% 11%;
+    --card-foreground: 210 40% 96%;
+    --popover: 222 44% 11%;
+    --popover-foreground: 210 40% 96%;
+    --primary: 217 76% 60%;
+    --primary-foreground: 0 0% 100%;
+    --primary-hover: 224 76% 56%;
+    --secondary: 222 30% 18%;
+    --secondary-foreground: 210 40% 96%;
+    --muted: 222 30% 18%;
+    --muted-foreground: 215 16% 60%;
+    --accent: 160 45% 16%;
+    --accent-foreground: 152 70% 70%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 222 30% 20%;
+    --input: 222 30% 20%;
+    --ring: 217 76% 60%;
+    --chart-1: 217 76% 60%;
+    --chart-2: 160 70% 45%;
+    --chart-3: 210 40% 80%;
+    --chart-4: 224 76% 56%;
+    --chart-5: 173 58% 45%;
+    --sidebar-background: 222 44% 9%;
+    --sidebar-foreground: 210 40% 96%;
+    --sidebar-primary: 217 76% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 222 30% 16%;
+    --sidebar-accent-foreground: 210 40% 96%;
+    --sidebar-border: 222 30% 18%;
+    --sidebar-ring: 217 76% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground font-body;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer utilities {
+  /* Brand gradient used across the landing page */
+  .text-gradient {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(110deg, hsl(222 47% 20%), hsl(224 76% 48%), hsl(160 84% 39%));
+  }
+
+  .bg-brand-gradient {
+    background-image: linear-gradient(110deg, hsl(224 64% 33%), hsl(160 84% 39%));
+  }
+
+  /* Subtle dotted/grid backdrop */
+  .bg-grid {
+    background-image:
+      linear-gradient(to right, hsl(var(--foreground) / 0.04) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(var(--foreground) / 0.04) 1px, transparent 1px);
+    background-size: 56px 56px;
+  }
+
+  /* Radial fade mask so backgrounds dissolve toward edges */
+  .mask-fade {
+    -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, #000 50%, transparent 100%);
+    mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, #000 50%, transparent 100%);
+  }
+
+  .glass {
+    @apply bg-card/70 backdrop-blur-xl;
+  }
+
+  .animation-delay-100 { animation-delay: 0.1s; }
+  .animation-delay-200 { animation-delay: 0.2s; }
+  .animation-delay-300 { animation-delay: 0.3s; }
+  .animation-delay-500 { animation-delay: 0.5s; }
+  .animation-delay-700 { animation-delay: 0.7s; }
+
+  .pause-on-hover:hover { animation-play-state: paused; }
+}
+
+/* ── Book reader typography ──────────────────────────────────────────────
+   Shared by the hidden measurer and the real pages so heights line up. */
+.book-prose {
+  font-family: 'Source Serif 4', 'Merriweather', Georgia, serif;
+}
+.book-prose p {
+  color: inherit;
+  font-family: 'Source Serif 4', 'Merriweather', Georgia, serif;
+  font-size: 13.5px;
+  line-height: 1.72;
+  margin: 0 0 9px;
+}
+.book-prose li,
+.book-prose td,
+.book-prose th,
+.book-prose blockquote {
+  font-family: 'Source Serif 4', 'Merriweather', Georgia, serif;
+  font-size: 13px;
+}
+.book-prose li { color: inherit; }
+.book-prose h1, .book-prose h2, .book-prose h3, .book-prose h4 {
+  font-family: 'Playfair Display', serif;
+}
+/* Tighten the first heading's top margin on a page */
+.book-prose > :first-child { margin-top: 0 !important; }
+
+/* react-pageflip leaf: paper edge + center gutter shadow */
+.report-flipbook { margin: 0 auto; }
+.book-leaf {
+  border-radius: 2px;
+}
+.report-flipbook .page-wrapper .page.--left .book-leaf {
+  box-shadow: inset -14px 0 26px -16px rgba(0,0,0,0.35);
+}
+.report-flipbook .page-wrapper .page.--right .book-leaf {
+  box-shadow: inset 14px 0 26px -16px rgba(0,0,0,0.35);
+}
