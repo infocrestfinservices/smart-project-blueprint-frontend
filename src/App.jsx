@@ -16,9 +16,12 @@ import Home from '@/pages/Home';
 import FeaturesPage from '@/pages/Features';
 import HowItWorksPage from '@/pages/HowItWorks';
 import PricingPage from '@/pages/Pricing';
+import RefundPolicy from '@/pages/RefundPolicy';
 import CreateReport from '@/pages/CreateReport';
 import ViewReport from '@/pages/ViewReport';
 import Dashboard from '@/pages/Dashboard';
+import Account from '@/pages/Account';
+import Admin from '@/pages/Admin';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -53,12 +56,19 @@ const AuthenticatedApp = () => {
       <Route path="/features" element={<FeaturesPage />} />
       <Route path="/how-it-works" element={<HowItWorksPage />} />
       <Route path="/pricing" element={<PricingPage />} />
+      {/* Public and unauthenticated on purpose: Razorpay checks this page before
+          issuing live keys, and a customer must be able to read it before paying. */}
+      <Route path="/refund-policy" element={<RefundPolicy />} />
 
       {/* Authenticated app pages */}
       <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
         <Route path="/create" element={<CreateReport />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/account" element={<Account />} />
         <Route path="/report/:id" element={<ViewReport />} />
+        {/* Staff only. The page itself redirects a non-admin away, and every /admin
+            endpoint it calls 404s server-side — the route being reachable buys nothing. */}
+        <Route path="/admin" element={<Admin />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>

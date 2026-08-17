@@ -28,6 +28,7 @@ const COLUMNS = [
       { label: "My Reports", to: "/dashboard" },
       { label: "Dashboard", to: "/dashboard" },
       { label: "Contact", to: "/pricing" },
+      { label: "Refund & Cancellation", to: "/refund-policy" },
     ],
   },
 ];

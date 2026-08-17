@@ -8,9 +8,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Copy, ArrowLeft, FileText, Palette, Edit3, Save, X, RefreshCw, Loader2, Check, ChevronDown, ChevronUp, Download, FileSpreadsheet, FileType, Cloud, CloudOff, ImagePlus, Paintbrush } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { ToastAction } from "@/components/ui/toast";
+import { useNavigate } from "react-router-dom";
 import { reportStorage } from "@/api/localStorageService";
 import { invokeLLM } from "@/api/llmService";
-import { downloadExcel, downloadWord, generateModel, saveBranding, getBranding } from "@/api/generationService";
+import { downloadExcel, downloadWord, generateModel, saveBranding, getBranding, fetchCoverImage } from "@/api/generationService";
 import { formatCurrency, purposes } from "@/lib/countryData";
 import { exportToPDF, exportToWord } from "@/lib/exportUtils";
 import { useAutoSave } from "@/hooks/useAutoSave";
@@ -63,6 +65,7 @@ const EDITABLE_FIELDS = [
 ];
 
 export default function ReportViewer({ report: initialReport, onBack }) {
+  const navigate = useNavigate();
   const { toast } = useToast();
   const [report, setReport] = useState(initialReport);
   const [theme, setTheme] = useState(COLOR_THEMES[0]);
@@ -73,6 +76,7 @@ export default function ReportViewer({ report: initialReport, onBack }) {
   const [editedContent, setEditedContent] = useState(report.report_content || "");
   const [isRegenerating, setIsRegenerating] = useState(false);
   const [isSavingFormat, setIsSavingFormat] = useState(false);
+  const [coverUrl, setCoverUrl] = useState("");
   const [showReview, setShowReview] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [isSavingContent, setIsSavingContent] = useState(false);
@@ -98,7 +102,22 @@ export default function ReportViewer({ report: initialReport, onBack }) {
       if (kind === "word") await downloadWord(report.id);
       else await downloadExcel(report.id);
     } catch (err) {
-      toast({ title: "Download failed", description: err?.message || "Please try again.", variant: "destructive" });
+      // 402 means the download is real and ready — the plan just does not include this
+      // format. Calling that "Download failed" reads like the report is broken, which it
+      // is not, so it gets its own wording and a way to act on it.
+      if (err?.needsUpgrade) {
+        toast({
+          title: `${kind === "word" ? "Word" : "Excel"} export needs a paid plan`,
+          description: err.message,
+          action: (
+            <ToastAction altText="See plans" onClick={() => navigate("/pricing")}>
+              See plans
+            </ToastAction>
+          ),
+        });
+      } else {
+        toast({ title: "Download failed", description: err?.message || "Please try again.", variant: "destructive" });
+      }
     } finally {
       setDownloading(null);
     }
@@ -138,6 +157,26 @@ export default function ReportViewer({ report: initialReport, onBack }) {
       })
       .catch(() => {});
     return () => { cancelled = true; };
+  }, [report.id]);
+
+  // The cover artwork. Fetched rather than linked: the endpoint is authenticated and an
+  // <img src> cannot carry the token. The object URL is released on unmount so a long
+  // session does not leak one image per report opened.
+  useEffect(() => {
+    let cancelled = false;
+    let url = "";
+    fetchCoverImage(report.id).then((u) => {
+      if (cancelled) {
+        if (u) URL.revokeObjectURL(u);
+        return;
+      }
+      url = u;
+      setCoverUrl(u);
+    });
+    return () => {
+      cancelled = true;
+      if (url) URL.revokeObjectURL(url);
+    };
   }, [report.id]);
 
   // Mark unsaved when editedContent changes
@@ -721,7 +760,61 @@ FORMATTING RULES:
               >
                 <Edit3 className="w-3 h-3" /> Edit Content
               </button>
+
+              {/* The artwork the Word report's cover carries — generated once per project
+                  and cached server-side, so the screen and the document always match. */}
+              {coverUrl && (
+                <img
+                  src={coverUrl}
+                  alt=""
+                  className="w-full h-48 sm:h-60 object-cover rounded-xl mb-6"
+                />
+              )}
+
               <ReportRenderer content={report.report_content} theme={activeTheme} />
+
+              {/* The two deliverables. This screen is a summary, not the report — the
+                  report itself is these two files. */}
+              <div className="mt-8 pt-6 border-t grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <button
+                  onClick={() => handleDownload("word")}
+                  disabled={!!downloading}
+                  className="flex items-center gap-3 rounded-xl border-2 border-border hover:border-primary/50 hover:bg-accent/40 px-4 py-4 text-left transition-all disabled:opacity-60"
+                >
+                  <span className="p-2.5 rounded-lg bg-primary/10 text-primary">
+                    {downloading === "word"
+                      ? <Loader2 className="w-5 h-5 animate-spin" />
+                      : <FileText className="w-5 h-5" />}
+                  </span>
+                  <span>
+                    <span className="block font-semibold text-sm">Word Report</span>
+                    <span className="block text-xs text-muted-foreground">
+                      {report.report_format === "short"
+                        ? "3-page overview" : "The full written report"}
+                    </span>
+                  </span>
+                </button>
+
+                <button
+                  onClick={() => handleDownload("excel")}
+                  disabled={!!downloading}
+                  className="flex items-center gap-3 rounded-xl border-2 border-border hover:border-primary/50 hover:bg-accent/40 px-4 py-4 text-left transition-all disabled:opacity-60"
+                >
+                  <span className="p-2.5 rounded-lg bg-emerald-500/10 text-emerald-600">
+                    {downloading === "excel"
+                      ? <Loader2 className="w-5 h-5 animate-spin" />
+                      : <FileSpreadsheet className="w-5 h-5" />}
+                  </span>
+                  <span>
+                    <span className="block font-semibold text-sm">Excel Report</span>
+                    <span className="block text-xs text-muted-foreground">
+                      {report.report_format === "short"
+                        ? "2 sheets — budget and projections"
+                        : "The full financial model"}
+                    </span>
+                  </span>
+                </button>
+              </div>
             </div>
           )}
         </div>

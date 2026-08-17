@@ -64,7 +64,10 @@ export const AuthProvider = ({ children }) => {
     setIsLoadingAuth(true);
     try {
       const me = await authService.me(token);
-      const sessionUser = { id: me.id, email: me.email, full_name: me.full_name, plan: me.plan };
+      // is_admin decides whether the Admin link exists at all. The BACKEND decides whether
+      // the routes answer — this flag only saves showing a door that would 404.
+      const sessionUser = { id: me.id, email: me.email, full_name: me.full_name,
+                            plan: me.plan, is_admin: Boolean(me.is_admin) };
       persistSession(null, sessionUser);
       setUser(sessionUser);
     } catch {

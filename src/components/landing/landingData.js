@@ -86,7 +86,7 @@ export const PLANS = [
       { text: "Investor-Grade Metrics (IRR, MOIC)", included: true },
       { text: "Priority AI Generation", included: false },
     ],
-    cta: "Start Free Trial",
+    cta: "Get Professional",
     variant: "default",
   },
   {

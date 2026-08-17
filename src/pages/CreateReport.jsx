@@ -12,39 +12,59 @@ import TemplateInputForm from "@/components/report/TemplateInputForm";
 
 const SYSTEM_PROMPT = `You are a friendly project report assistant. Your job is to gather information from the user to create a professional project report.
 
-CONVERSATION FLOW:
-1. When the user describes their business idea, extract what you can and ask ONE follow-up question at a time.
-2. You MUST gather these details conversationally (ask only what you don't know yet):
-   - Project/business title and description
+CONVERSATION FLOW — follow this ORDER exactly. Ask ONE question per message, warm and short.
+
+STEP 1 — the business (ask only what you do not already know):
+   - Project/business title and what it does
    - Country and city/location
    - Industry/sector
    - Promoter/company name and their experience
    - Target market and customers
-   - Total project cost (and currency)
-   - Own contribution vs loan/funding required
-   - Purpose: bank loan, feasibility study, government grant, venture capital, angel investment, immigration business plan, or internal planning
-   - Report format preference: short (2-3 pages) or long (10-15 pages)
-   - Financial projection format (see rules below)
-3. Ask ONE clear, friendly question at a time. Keep it conversational.
 
-FINANCIAL FORMAT QUESTION (ask after purpose is known):
-- If purpose is "bank_loan" AND country is India → ask: "Do you need **CMA (Credit Monitoring Arrangement) data** format as required by Indian banks? If yes, which bank — SBI, PNB, Canara, or others? This includes DSCR, Current Ratio, TOL/TNW, and Fund Flow Statement."
-- If purpose is "bank_loan" AND country is USA → ask: "Is this for an **SBA loan** (SBA 7a/504)? SBA requires specific cash flow analysis, debt schedule, and global cash flow statement."
-- If purpose is "bank_loan" AND country is UK → ask: "Is this for a specific bank product — e.g. **British Business Bank / Innovate UK Innovation Grant / CBILS**? Each has specific financial requirements."
-- If purpose is "bank_loan" AND country is other → ask: "Do you need the financials in any specific bank format, or standard format is fine?"
-- If purpose is "venture_capital" or "angel_investment" → ask: "What investor grade format do you need — **VC/Angel pitch** (IRR, NPV, payback period, cap table), **PE/Growth equity** (EBITDA multiples, exit valuation), or **Standard investor deck**?"
-- If purpose is "government_grant" → ask: "Which specific government scheme or grant are you applying for? (e.g. PMEGP, Mudra, CGTMSE, Startup India, state scheme)"
-- If purpose is "immigration_business_plan" → ask: "Which country and visa type is this for? (e.g. Canada Start-up Visa, UK Innovator Founder, USA E-2, Australia Business Innovation)"
-- If purpose is "feasibility_study" or "internal_planning" → set financial_format to "standard", skip this question.
+STEP 2 — as soon as you have the target market, ask THIS, before any money question:
 
-PURPOSE-SPECIFIC QUESTIONS (ask these AFTER purpose is known, ONE at a time, conversationally; put every answer into "purpose_answers" using the exact keys shown). Pick the set that matches the purpose:
-- Feasibility Study (feasibility_study / internal_planning): land_cost, building_cost, machinery_cost, production_capacity, raw_material_cost, utility_cost, labour_cost, selling_price, market_demand, production_process
-- CMA Data / Bank Loan (bank_loan, or financial_format cma_india): loan_amount, existing_borrowings, working_capital_requirement, current_assets, current_liabilities, projected_sales, projected_expenses, inventory, debtors, creditors, bank_name
-- IRR / Investor (venture_capital / angel_investment): initial_investment, discount_rate, project_life, salvage_value, operating_cost, annual_revenue, tax_rate, inflation_rate, maintenance_cost
-- Any other purpose: project_cost, annual_revenue, operating_cost, own_contribution, loan_amount
-For numeric answers, store plain numbers (no symbols/commas). If the user doesn't know a value, store null and move on — do not block.
+  "Before we go into the numbers — which of these do you need?
 
-4. Once you have ALL required information (core details + financial format + the purpose-specific answers), respond with ONLY a JSON block (no other text):
+   **Short** — a quick read to help you decide whether this business is worth doing:
+   what it would cost to set up, what the market looks like, and a clear verdict.
+
+   **Long** — the full CMA submission for your bank: every statutory form, schedule and
+   supporting analysis a lender asks for."
+
+   Set report_format to "short" or "long" from their answer. If they are unsure, ask what
+   they need it FOR — to decide, or to submit to a bank — and choose from that. NEVER guess
+   it, and NEVER mention page counts.
+
+STEP 3 — now ask the money questions, and ask ONLY the set that matches their answer:
+
+   IF SHORT — three questions, nothing more. Do not ask for balance-sheet figures; the
+   short report does not use them and asking for them wastes the user's time:
+     - roughly what the whole project would cost to set up (project_cost)
+     - how much of that they want as a bank loan (loan_amount)
+     - which bank they are approaching (bank_name)
+     Then go straight to the JSON block.
+
+   IF LONG — first the bank-format question:
+     - India → "Do you need **CMA (Credit Monitoring Arrangement) data** format as required
+       by Indian banks? If yes, which bank — SBI, PNB, Canara, or others?"
+     - USA → "Is this for an **SBA loan** (SBA 7a/504)?"
+     - UK → "Is this for a specific bank product — e.g. **British Business Bank / CBILS**?"
+     - elsewhere → "Any specific bank format, or is the standard format fine?"
+     then these figures, ONE at a time, into "purpose_answers" under these exact keys:
+     loan_amount, existing_borrowings, working_capital_requirement, current_assets,
+     current_liabilities, projected_sales, projected_expenses, inventory, debtors,
+     creditors, bank_name
+
+PURPOSE IS ALWAYS "bank_loan". Never ask what the report is for and never offer other
+purposes — every report this product makes is a bank submission. Set it silently.
+
+For numeric answers store plain numbers (no symbols or commas). If the user does not know a
+value, store null and move on — never block on a figure they have not worked out yet.
+
+STEP 4 — once you have everything STEP 3 asked for (and nothing more), respond with ONLY
+this JSON block and no other text. For a SHORT report leave the balance-sheet keys out
+entirely rather than inventing them, and set financial_format to "cma_india" for India or
+"standard" elsewhere without asking.
 
 \`\`\`json
 {
@@ -64,12 +84,12 @@ For numeric answers, store plain numbers (no symbols/commas). If the user doesn'
     "project_cost": 0,
     "own_contribution": 0,
     "loan_amount": 0,
-    "purpose": "bank_loan|feasibility_study|government_grant|venture_capital|angel_investment|immigration_business_plan|internal_planning",
+    "purpose": "bank_loan",
     "government_scheme_name": "...",
     "report_format": "short|long",
-    "financial_format": "cma_india|sba_usa|innovate_uk|investor_vc|investor_pe|investor_standard|standard",
+    "financial_format": "cma_india|sba_usa|innovate_uk|standard",
     "financial_format_detail": "e.g. SBI CMA, SBA 7a, Innovate UK, Series A VC, etc.",
-    "purpose_answers": { "<purpose-specific keys>": "<numbers or text per the list above>" }
+    "purpose_answers": { "<only the keys STEP 3 actually asked for>": "<number or text>" }
   }
 }
 \`\`\`
@@ -79,8 +99,6 @@ IMPORTANT RULES:
 - Be warm and professional
 - If user gives vague costs (e.g. "around 50 lakhs"), use the number (5000000 for INR)
 - Infer currency from country (India→INR, US→USD, etc.)
-- If format not specified, ask: "Would you like a Short format (2-3 pages, quick overview) or Long format (10-15 pages, comprehensive)?"
-- If purpose not specified, ask about it
 - Keep questions short and direct`;
 
 function buildFinancialFormatInstructions(data, curr) {
@@ -460,6 +478,7 @@ export default function CreateReport() {
   const [isThinking, setIsThinking] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatingStep, setGeneratingStep] = useState(0);
+  const [elapsed, setElapsed] = useState(0);
   const [collectedData, setCollectedData] = useState(null);
   // After the chat is "ready", we pause to let the user review the chosen
   // template's financial inputs before generating.
@@ -541,14 +560,29 @@ export default function CreateReport() {
     }
   };
 
+  // What the user watches for several minutes. Two rules learnt the hard way:
+  // never quote a page count (the report's length is decided by the business, not by us),
+  // and never leave the same line on screen long enough for them to think it has hung.
+  const isLongFormat = String(pendingData?.report_format || collectedData?.report_format
+                              || "").toLowerCase().startsWith("l");
   const GENERATION_STEPS = [
-    "Analyzing project details...",
-    "Researching industry & market data...",
-    "Drafting business narrative sections...",
-    "Calculating financial projections...",
-    "Building P&L, cash flow & ratio tables...",
-    "Compiling & finalizing report...",
+    "Reading your business details…",
+    "Studying your market and who you would be competing with…",
+    "Working out what the project would cost to set up…",
+    "Building your financial model…",
+    "Putting the CMA figures together the way your bank reads them…",
+    "Writing your report…",
+    "Assembling the workbook…",
   ];
+  // Once the steps run out the work is usually still going, so these keep turning over
+  // rather than freezing on "finalizing" for six more minutes.
+  const HOLDING_LINES = [
+    "Still working — this one takes a few minutes.",
+    "Almost there. Please stay on this page.",
+    "Checking every figure ties back to the workbook…",
+    "Nearly done — putting the last pieces together.",
+  ];
+  const OVEN = ["📄", "📊", "📈", "🧮", "📋", "✨"];
 
   // Called from the template-inputs step: the user's cell answers + chosen template.
   const handleInputsSubmit = ({ templateId, cellAnswers }) => {
@@ -588,10 +622,18 @@ export default function CreateReport() {
         ? `\nINDUSTRY-SPECIFIC SECTIONS TO INCLUDE: ${templateSections.join(", ")}\n${selectedTemplate.contextHint}`
         : "";
 
-      // Keep the progress UI advancing while the backend does the heavy work.
+      // Keep the progress UI moving while the backend does the heavy work. A full run is
+      // MINUTES, not seconds, so the steps advance slowly and then the holding lines take
+      // over — a screen frozen on one sentence is what makes people close the tab.
+      setElapsed(0);
+      const startedAt = Date.now();
       const stepTimer = setInterval(() => {
-        setGeneratingStep((s) => Math.min(s + 1, GENERATION_STEPS.length - 1));
-      }, 3000);
+        setGeneratingStep((s) => s + 1);
+        setElapsed(Math.round((Date.now() - startedAt) / 1000));
+      }, 7000);
+      const tickTimer = setInterval(
+        () => setElapsed(Math.round((Date.now() - startedAt) / 1000)), 1000);
+      const clearTimers = () => { clearInterval(stepTimer); clearInterval(tickTimer); };
 
       try {
         // 1) Create the project (ownership is enforced server-side from the JWT).
@@ -627,16 +669,21 @@ export default function CreateReport() {
           templateId
         );
 
-        clearInterval(stepTimer);
+        clearTimers();
         navigate(`/report/${saved.id}`);
       } catch (innerErr) {
-        clearInterval(stepTimer);
+        clearTimers();
         throw innerErr;
       }
     } catch (err) {
       setIsGenerating(false);
       console.error("Report generation error:", err);
-      setMessages(prev => [...prev, {
+      // A plan limit is not a failure and "please try again" is the wrong advice for it —
+      // trying again gives the same answer. Say what ran out and where to go.
+      setMessages(prev => [...prev, err?.needsUpgrade ? {
+        role: "assistant",
+        content: `${err.message}\n\nYou can see the plans at /pricing — everything you have already created stays exactly where it is.`
+      } : {
         role: "assistant",
         content: `❌ Report generation failed: ${err?.message || "Unknown error"}. Please try again.`
       }]);
@@ -823,26 +870,37 @@ export default function CreateReport() {
               </div>
               <div className="bg-accent border border-primary/20 rounded-2xl rounded-tl-sm px-4 py-4 text-sm flex flex-col gap-3 min-w-[280px] max-w-[380px]">
                 <div className="flex items-center gap-2 text-primary font-medium">
-                  <Loader2 className="w-4 h-4 animate-spin flex-shrink-0" />
-                  <span>{GENERATION_STEPS[generatingStep]}</span>
+                  <span className="text-lg leading-none animate-bounce flex-shrink-0"
+                        style={{ animationDuration: "1.6s" }}>
+                    {OVEN[generatingStep % OVEN.length]}
+                  </span>
+                  <span>
+                    {generatingStep < GENERATION_STEPS.length
+                      ? GENERATION_STEPS[generatingStep]
+                      : HOLDING_LINES[(generatingStep - GENERATION_STEPS.length) % HOLDING_LINES.length]}
+                  </span>
                 </div>
+
+                {/* Deliberately NOT a percentage: the work does not finish on a schedule,
+                    and a bar that sticks at 90% reads as broken. This one just moves. */}
                 <div className="w-full bg-primary/10 rounded-full h-2 overflow-hidden">
-                  <div
-                    className="h-2 rounded-full bg-primary transition-all duration-700 ease-out"
-                    style={{ width: `${Math.round(((generatingStep + 1) / GENERATION_STEPS.length) * 100)}%` }}
-                  />
+                  <div className="h-2 w-1/3 rounded-full bg-primary"
+                       style={{ animation: "shortReportSlide 1.8s ease-in-out infinite" }} />
                 </div>
-                <div className="flex gap-1.5 flex-wrap">
-                  {GENERATION_STEPS.map((step, i) => (
-                    <div
-                      key={i}
-                      title={step}
-                      className={`h-1.5 flex-1 rounded-full transition-all duration-500 ${i < generatingStep ? "bg-primary" : i === generatingStep ? "bg-primary/60 animate-pulse" : "bg-primary/15"
-                        }`}
-                    />
-                  ))}
-                </div>
-                <p className="text-xs text-muted-foreground">Step {generatingStep + 1} of {GENERATION_STEPS.length} · Usually ready in 20–30 sec</p>
+                <style>{`@keyframes shortReportSlide {
+                  0% { transform: translateX(-100%); }
+                  100% { transform: translateX(300%); }
+                }`}</style>
+
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Your CMA report is being prepared for your business in the{" "}
+                  <strong>{isLongFormat ? "long" : "short"}</strong> format.
+                  <br />
+                  Please stay on this page — it is still working.
+                  {elapsed > 0 && (
+                    <> {" · "}{Math.floor(elapsed / 60)}m {String(elapsed % 60).padStart(2, "0")}s</>
+                  )}
+                </p>
               </div>
             </div>
           )}

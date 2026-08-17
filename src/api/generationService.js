@@ -41,7 +41,7 @@ export async function generateModel(projectId, purposeAnswers = {}, templateId =
     }),
   });
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data?.detail || `Generation failed (${res.status})`);
+  if (!res.ok) throw planAwareError(res, data, `Generation failed (${res.status})`);
   return data;
 }
 
@@ -74,13 +74,29 @@ export async function getTemplateSchema(purpose, templateId) {
   return res.json(); // { label, purpose_key, template_id, groups: [...] }
 }
 
+/**
+ * An error that remembers WHY the server said no.
+ *
+ * The backend answers 402 when the request is perfectly valid and the caller simply is not
+ * on a plan that covers it — a Word download on Free, or a fourth report on Starter. That
+ * is not a failure to report as one: the user has done nothing wrong and there is an
+ * obvious next step. Marking it here lets the screens show the plan message with a way to
+ * act on it, instead of a red "download failed".
+ */
+function planAwareError(res, body, fallback) {
+  const err = new Error(body?.detail || fallback);
+  err.status = res.status;
+  err.needsUpgrade = res.status === 402;
+  return err;
+}
+
 async function streamDownload(projectId, kind) {
   const res = await fetch(`${BACKEND_URL}/generate/${projectId}/${kind}`, {
     headers: authHeaders(false),
   });
   if (!res.ok) {
     const e = await res.json().catch(() => ({}));
-    throw new Error(e?.detail || `Download failed (${res.status})`);
+    throw planAwareError(res, e, `Download failed (${res.status})`);
   }
   const blob = await res.blob();
   const cd = res.headers.get("Content-Disposition") || "";
@@ -159,4 +175,20 @@ export async function saveInserts(projectId, inserts) {
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data?.detail || `Could not save the inserts (${res.status})`);
   return data;
+}
+
+// The project's cover artwork — the same image the Word report's cover carries, generated
+// once and cached server-side, so the screen and the document can never disagree.
+export async function fetchCoverImage(projectId) {
+  // Fetched rather than set as an <img src>: the endpoint needs the JWT in a header, and
+  // an <img> tag cannot send one. Returns an object URL, or "" when there is no artwork.
+  try {
+    const res = await fetch(`${BACKEND_URL}/generate/${projectId}/cover`, {
+      headers: authHeaders(false),
+    });
+    if (!res.ok) return "";
+    return URL.createObjectURL(await res.blob());
+  } catch {
+    return "";
+  }
 }

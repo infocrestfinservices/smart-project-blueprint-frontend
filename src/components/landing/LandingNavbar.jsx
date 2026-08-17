@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
 import { Button } from "@/components/ui/button";
 import Logo from "@/components/Logo";
-import { LogOut, Menu, X, ArrowRight, LayoutDashboard } from "lucide-react";
+import { LogOut, Menu, X, ArrowRight, LayoutDashboard, Shield, Receipt } from "lucide-react";
 
 const NAV_LINKS = [
   { label: "Home", to: "/" },
@@ -74,6 +74,20 @@ export default function LandingNavbar() {
                   <LayoutDashboard className="w-4 h-4" /> Dashboard
                 </Button>
               </Link>
+              {/* Staff only. Hiding the link is a convenience, not the protection — the
+                  /admin endpoints 404 for everyone else regardless of what is rendered. */}
+              <Link to="/account" className="hidden sm:block">
+                <Button variant="ghost" size="sm" className="h-9 px-3 gap-1.5">
+                  <Receipt className="w-4 h-4" /> Account
+                </Button>
+              </Link>
+              {user.is_admin ? (
+                <Link to="/admin" className="hidden sm:block">
+                  <Button variant="ghost" size="sm" className="h-9 px-3 gap-1.5">
+                    <Shield className="w-4 h-4" /> Admin
+                  </Button>
+                </Link>
+              ) : null}
               <Link to="/create" className="hidden sm:block">
                 <Button size="sm" className="h-9 px-4 gap-1.5">
                   New report <ArrowRight className="w-4 h-4" />

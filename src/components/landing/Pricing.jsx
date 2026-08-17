@@ -1,10 +1,121 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, X, ArrowRight, Sparkles } from "lucide-react";
+import { CheckCircle2, X, ArrowRight, Sparkles, Loader2 } from "lucide-react";
 import { PLANS, ONE_TIME } from "./landingData";
+import { getPaymentConfig, payForPlan, subscribeToPlan, previewCoupon, isLoggedIn } from "@/api/paymentService";
+import { Input } from "@/components/ui/input";
+import { Tag, Check } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
+
+// The card's display name is what the server knows the plan by. Keep these in step: an
+// unknown id is refused by /payments/order rather than charged at some default.
+const PLAN_IDS = { Starter: "starter", Professional: "professional", Enterprise: "enterprise" };
+// Which plans are billed every month and so need a mandate rather than a one-off charge.
+// The server refuses /payments/subscribe for anything else, so this only decides which
+// checkout to open — it is not what enforces the rule.
+const RECURRING = new Set(["professional", "enterprise"]);
 
 export default function Pricing({ showHeader = true }) {
+  const { toast } = useToast();
+  const navigate = useNavigate();
+  const [payments, setPayments] = useState({ enabled: false });
+  const [busy, setBusy] = useState("");
+  // One code for the whole page rather than one per card: a customer has a code, not a code
+  // per plan, and the server refuses it on any plan it does not apply to anyway.
+  const [coupon, setCoupon] = useState("");
+  const [couponState, setCouponState] = useState(null);   // {valid, message, discount}
+  const [checkingCoupon, setCheckingCoupon] = useState(false);
+
+  const applyCoupon = async () => {
+    const code = coupon.trim();
+    if (!code) { setCouponState(null); return; }
+    if (!isLoggedIn()) {
+      setCouponState({ valid: false, message: "Sign in to use a coupon." });
+      return;
+    }
+    setCheckingCoupon(true);
+    // Previewed against Professional, the plan the code is most likely meant for. It is
+    // re-checked against the ACTUAL plan when the order is created, so a code that only
+    // applies to Starter is still honoured there — this preview is a courtesy, not the rule.
+    setCouponState(await previewCoupon(code, "professional"));
+    setCheckingCoupon(false);
+  };
+
+  // Whether checkout is available is the SERVER's answer — it holds the keys. Without
+  // this the buttons would offer to take money the backend cannot accept.
+  useEffect(() => {
+    let cancelled = false;
+    getPaymentConfig().then((c) => !cancelled && setPayments(c || { enabled: false }));
+    return () => { cancelled = true; };
+  }, []);
+
+  const buy = async (plan) => {
+    const id = PLAN_IDS[plan.name];
+    if (!id) return;
+    if (!isLoggedIn()) {
+      toast({ title: "Please sign in first",
+              description: "A plan is attached to your account, so we need you signed in." });
+      navigate("/login");
+      return;
+    }
+    // Only a code the SERVER said was valid is sent. A rejected one is not smuggled along
+    // in the hope the order endpoint is more forgiving — it is not, and it would fail the
+    // sale instead of just not discounting it.
+    const appliedCode = couponState?.valid ? coupon.trim() : null;
+    setBusy(id);
+    try {
+      // Monthly plans take a MANDATE, not a single charge. Charging them once was how
+      // "₹1,499 / month" became a one-off payment for a licence that never ended. Starter
+      // is genuinely one-time and keeps the Orders flow.
+      const recurring = RECURRING.has(id);
+      let result;
+      let usedAutoPay = recurring;
+      if (recurring) {
+        try {
+          result = await subscribeToPlan(id, { onStatus: () => {} });
+        } catch (e) {
+          // Auto-pay not enabled on the payment account yet. Selling the plan as a single
+          // month is far better than refusing the sale — the server grants exactly 30 days
+          // either way; only the renewal differs.
+          if (!e?.autoPayUnavailable) throw e;
+          usedAutoPay = false;
+          result = await payForPlan(id, { onStatus: () => {}, coupon: appliedCode });
+        }
+      } else {
+        result = await payForPlan(id, { onStatus: () => {}, coupon: appliedCode });
+      }
+      if (!result) return;
+
+      if (result.free) {
+        toast({ title: "Your plan is active",
+                description: result.message || `${plan.name} is now active — nothing to pay.` });
+        return;
+      }                       // checkout closed — say nothing
+
+      if (recurring && !usedAutoPay) {
+        toast({ title: "Payment received",
+                description: `You are on ${plan.name} for 30 days. Automatic renewal is `
+                           + `being switched on shortly — until then you can renew here.` });
+        return;
+      }
+      toast(usedAutoPay
+        ? { title: "Auto-pay is set up",
+            // The plan is granted by a webhook, server to server, so it can land a moment
+            // after the browser is done. Promising it is already active would be a lie the
+            // user can see through by reloading.
+            description: `${plan.name} will activate in a few seconds and renew every month. `
+                       + `You can cancel any time.` }
+        : { title: "Payment received",
+            description: `You are on the ${plan.name} plan.` });
+    } catch (err) {
+      toast({ title: "Payment could not be completed",
+              description: err?.message || "Please try again.", variant: "destructive" });
+    } finally {
+      setBusy("");
+    }
+  };
+
   return (
     <section id="pricing" className="bg-muted/30 border-y">
       <div className={`max-w-6xl mx-auto px-4 sm:px-6 pb-14 sm:pb-16 ${showHeader ? "pt-14 sm:pt-16" : "pt-8 sm:pt-10"}`}>
@@ -60,21 +171,66 @@ export default function Pricing({ showHeader = true }) {
 
                 {/* CTA */}
                 <div className="px-6 pb-6 mt-auto">
-                  <Link to="/create">
-                    <Button variant={plan.variant} className="w-full gap-1.5" size="lg">
-                      {plan.cta}
-                      {popular && <ArrowRight className="w-4 h-4" />}
+                  {/* Enterprise is a conversation, not a checkout — and if the server has
+                      no keys the button stays a link rather than offering to take money
+                      that cannot be collected. */}
+                  {payments.enabled && PLAN_IDS[plan.name] && plan.name !== "Enterprise" ? (
+                    <Button
+                      variant={plan.variant}
+                      className="w-full gap-1.5"
+                      size="lg"
+                      disabled={Boolean(busy)}
+                      onClick={() => buy(plan)}
+                    >
+                      {busy === PLAN_IDS[plan.name]
+                        ? <><Loader2 className="w-4 h-4 animate-spin" /> Opening checkout…</>
+                        : <>{plan.cta}{popular && <ArrowRight className="w-4 h-4" />}</>}
                     </Button>
-                  </Link>
+                  ) : (
+                    <Link to={plan.name === "Enterprise" ? "/contact" : "/create"}>
+                      <Button variant={plan.variant} className="w-full gap-1.5" size="lg">
+                        {plan.cta}
+                        {popular && <ArrowRight className="w-4 h-4" />}
+                      </Button>
+                    </Link>
+                  )}
                 </div>
               </div>
             );
           })}
         </div>
 
+        {/* Coupon */}
+        {payments.enabled && (
+          <div className="mt-10 flex flex-col items-center gap-2">
+            <div className="flex w-full max-w-sm gap-2">
+              <div className="relative flex-1">
+                <Tag className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  className="pl-9 uppercase"
+                  placeholder="Have a coupon code?"
+                  value={coupon}
+                  onChange={(e) => { setCoupon(e.target.value); setCouponState(null); }}
+                  onKeyDown={(e) => e.key === "Enter" && applyCoupon()}
+                />
+              </div>
+              <Button variant="outline" onClick={applyCoupon} disabled={checkingCoupon || !coupon.trim()}>
+                {checkingCoupon ? <Loader2 className="h-4 w-4 animate-spin" /> : "Apply"}
+              </Button>
+            </div>
+            {couponState && (
+              <p className={`text-sm inline-flex items-center gap-1.5 ${couponState.valid
+                ? "text-emerald-600" : "text-destructive"}`}>
+                {couponState.valid && <Check className="h-4 w-4" />}
+                {couponState.message}
+              </p>
+            )}
+          </div>
+        )}
+
         {/* Trust line */}
         <p className="text-center text-sm text-muted-foreground mt-10">
-          🔒 Secure payments · 7-day money-back guarantee · GST invoice on every plan
+          🔒 Secure payments · <Link to="/refund-policy" className="underline hover:text-foreground">7-day money-back guarantee</Link> · Invoice on every plan
         </p>
 
         {/* One-time purchases */}
