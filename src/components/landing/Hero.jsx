@@ -1,13 +1,17 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import {
-  ArrowRight, Star, TrendingUp, IndianRupee, ShieldCheck,
-  FileText, Sparkles, Check, Layers, Globe2, Download, BarChart3, PlayCircle,
+  TrendingUp, IndianRupee, ShieldCheck,
+  FileText, Check, Layers, Globe2, Download, BarChart3,
 } from "lucide-react";
+import { REPORT_TEMPLATES } from "@/lib/reportTemplates";
 
 const BARS = [42, 58, 50, 72, 66, 85, 78, 94];
-const AVATARS = ["RM", "PN", "AK", "SV"];
+
+// A rotating strip of concrete business ideas, one per industry template —
+// each rendered as its own tiny brand-tinted "photo" tile.
+const INDUSTRY_IDEAS = REPORT_TEMPLATES.flatMap((t) =>
+  t.examples.map((label) => ({ label, icon: t.icon, bg: t.lightColor }))
+);
 
 // Concrete app capabilities — what ReportCraft actually produces.
 const CAPABILITIES = [
@@ -26,86 +30,34 @@ export default function Hero() {
       <div className="absolute top-[-12%] left-1/2 -translate-x-1/2 -z-10 w-[820px] h-[440px] bg-primary/15 blur-[130px] rounded-full" />
       <div className="absolute top-[8%] right-[6%] -z-10 w-[360px] h-[360px] bg-emerald-400/10 blur-[120px] rounded-full" />
 
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-14 sm:pt-20 text-center">
-        {/* Eyebrow */}
-        <div className="inline-flex items-center gap-2.5 bg-card/80 backdrop-blur border border-border shadow-sm text-xs font-medium pl-1.5 pr-3.5 py-1.5 rounded-full mb-7 animate-fade-up">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 text-primary font-semibold px-2.5 py-1">
-            <Sparkles className="w-3.5 h-3.5" /> Claude Opus AI
-          </span>
-          <span className="inline-flex items-center gap-1.5 text-muted-foreground">
-            <span className="relative flex h-1.5 w-1.5">
-              <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 animate-ping" />
-              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500" />
-            </span>
-            <span className="font-semibold text-foreground">10,000+</span> reports generated
-          </span>
-        </div>
-
-        <h1 className="text-[2.5rem] sm:text-6xl font-heading font-bold tracking-tight leading-[1.05] animate-fade-up animation-delay-100">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-20 sm:pt-28 text-center">
+        <h1 className="text-[2.5rem] sm:text-6xl font-heading font-bold tracking-tight leading-[1.05] animate-fade-up">
           Bank &amp; investor-ready
           <br className="hidden sm:block" />{" "}
           <span className="text-gradient">project reports in minutes</span>
         </h1>
 
-        <p className="text-muted-foreground mt-7 max-w-2xl mx-auto text-base sm:text-lg leading-relaxed animate-fade-up animation-delay-200">
-          Describe your business idea. ReportCraft <span className="text-foreground font-medium">interviews you</span>,
-          builds a 5-year financial model, and writes a complete <span className="text-foreground font-medium">CMA, SBA or
-          investor-grade report</span> — formatted exactly how your bank, scheme, or investor expects.
-        </p>
-
-        <div className="flex flex-col sm:flex-row gap-3 justify-center mt-9 animate-fade-up animation-delay-300">
-          <Link to="/create">
-            <Button size="lg" className="h-12 px-7 text-base gap-2 shadow-xl shadow-primary/30 w-full sm:w-auto group">
-              Create your free report
-              <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-            </Button>
-          </Link>
-          <Link to="/how-it-works">
-            <Button variant="outline" size="lg" className="h-12 px-7 text-base gap-2 w-full sm:w-auto bg-card group">
-              <PlayCircle className="w-5 h-5 text-primary" />
-              See how it works
-            </Button>
-          </Link>
-        </div>
-
-        {/* Trust row */}
-        <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-3 mt-9 animate-fade-up animation-delay-500">
-          <div className="flex items-center gap-2.5">
-            <div className="flex -space-x-2">
-              {AVATARS.map((a, i) => (
+        {/* Industry ideas marquee — a quick, scrolling glimpse of businesses ReportCraft covers */}
+        <div className="relative max-w-2xl mx-auto mt-8 overflow-hidden [mask-image:linear-gradient(to_right,transparent,#000_10%,#000_90%,transparent)] animate-fade-up animation-delay-100">
+          <div className="flex w-max gap-3 animate-marquee pause-on-hover">
+            {[...INDUSTRY_IDEAS, ...INDUSTRY_IDEAS].map((item, i) => (
+              <div key={i} className="shrink-0 flex flex-col items-center gap-1 w-14">
                 <span
-                  key={a}
-                  className={`w-8 h-8 rounded-full border-2 border-background grid place-items-center text-[10px] font-bold text-white bg-gradient-to-br ${
-                    ["from-blue-600 to-indigo-600", "from-emerald-500 to-teal-500", "from-amber-500 to-orange-500", "from-sky-500 to-blue-500"][i]
-                  }`}
+                  className="grid place-items-center w-9 h-9 rounded-lg border border-border shadow-sm text-base"
+                  style={{ backgroundColor: item.bg }}
                 >
-                  {a}
+                  {item.icon}
                 </span>
-              ))}
-            </div>
-            <div className="text-left leading-tight">
-              <div className="flex items-center gap-0.5">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                ))}
-                <span className="ml-1 text-sm font-semibold text-foreground">4.9</span>
+                <span className="text-[9px] font-medium text-muted-foreground text-center leading-tight truncate w-full">
+                  {item.label}
+                </span>
               </div>
-              <p className="text-xs text-muted-foreground">from 2,100+ founders</p>
-            </div>
+            ))}
           </div>
-
-          <span className="hidden sm:block w-px h-8 bg-border" />
-
-          <span className="inline-flex items-center gap-1.5 text-sm text-muted-foreground">
-            <Check className="w-4 h-4 text-emerald-500" /> No credit card needed
-          </span>
-          <span className="inline-flex items-center gap-1.5 text-sm text-muted-foreground">
-            <ShieldCheck className="w-4 h-4 text-emerald-500" /> Bank-grade formatting
-          </span>
         </div>
 
         {/* Capability strip — concrete app detail */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mt-12 animate-fade-up animation-delay-500">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mt-14 animate-fade-up animation-delay-200">
           {CAPABILITIES.map((c) => (
             <div
               key={c.label}
