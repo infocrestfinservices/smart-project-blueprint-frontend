@@ -1,0 +1,17 @@
+{
+  "name": "ReportCraft AI",
+  "short_name": "ReportCraft AI",
+  "description": "AI-generated bank-ready project reports (CMA, DPR, and more).",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "/vite.svg",
+      "sizes": "64x64",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
