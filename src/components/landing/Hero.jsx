@@ -4,6 +4,7 @@ import {
   FileText, Check, Layers, Globe2, Download, BarChart3,
 } from "lucide-react";
 import FinanceBackdrop from "./FinanceBackdrop";
+import IndustriesShowcase from "./IndustriesShowcase";
 
 const BARS = [42, 58, 50, 72, 66, 85, 78, 94];
 
@@ -76,6 +77,8 @@ export default function Hero() {
           ))}
         </div>
       </div>
+
+      <IndustriesShowcase />
 
       {/* Product preview — the "hero screenshot" */}
       <div className="relative max-w-5xl mx-auto px-4 sm:px-6 mt-14 pb-20 sm:pb-24 animate-fade-up animation-delay-700">
