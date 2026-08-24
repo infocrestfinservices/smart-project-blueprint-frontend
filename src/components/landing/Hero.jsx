@@ -59,22 +59,20 @@ export default function Hero() {
           <span className="text-gradient">project reports in minutes</span>
         </h1>
 
-        {/* Capability strip — concrete app detail */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-10 animate-fade-up animation-delay-200">
-          {CAPABILITIES.map((c) => (
-            <div
-              key={c.label}
-              className="flex items-center gap-3.5 rounded-xl border border-primary/25 bg-card/70 backdrop-blur px-5 py-5 text-left shadow-sm transition-colors hover:border-primary/40"
-            >
-              <span className="shrink-0 grid place-items-center w-10 h-10 rounded-lg bg-accent text-accent-foreground">
-                <c.icon className="w-[18px] h-[18px]" />
-              </span>
-              <div className="leading-tight min-w-0">
-                <p className="text-sm font-semibold truncate">{c.label}</p>
-                <p className="text-[11px] text-muted-foreground truncate mt-0.5">{c.sub}</p>
+        {/* Capability strip — one unified banner, icon-over-stat style */}
+        <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden mt-10 shadow-xl shadow-primary/20 animate-fade-up animation-delay-200">
+          <div className="absolute inset-0 bg-gradient-to-r from-primary via-primary-hover to-primary" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,rgba(255,255,255,0.28),transparent_60%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_92%_100%,rgba(16,185,129,0.35),transparent_55%)]" />
+          <div className="relative grid grid-cols-2 sm:grid-cols-4 divide-y divide-x sm:divide-y-0 divide-white/15">
+            {CAPABILITIES.map((c) => (
+              <div key={c.label} className="flex flex-col items-center text-center px-4 py-7 sm:py-9">
+                <c.icon className="w-7 h-7 sm:w-8 sm:h-8 text-white mb-3" strokeWidth={1.5} />
+                <p className="text-white font-bold text-base sm:text-lg leading-snug">{c.label}</p>
+                <p className="text-white/70 text-xs sm:text-sm mt-1">{c.sub}</p>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
 
