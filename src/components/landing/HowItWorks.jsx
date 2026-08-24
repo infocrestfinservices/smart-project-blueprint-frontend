@@ -1,13 +1,53 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { STEPS } from "./landingData";
+
+// Re-reveals each step as it scrolls in/out of view (not a one-shot fade),
+// so the step list stays lively next to the always-looping demo clip.
+function useInView(threshold = 0.4) {
+  const ref = useRef(null);
+  const [inView, setInView] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(([entry]) => setInView(entry.isIntersecting), { threshold });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+  return [ref, inView];
+}
+
+function StepItem({ s }) {
+  const [ref, inView] = useInView();
+  return (
+    <div
+      ref={ref}
+      className={`flex gap-5 transition-all duration-700 ease-out ${
+        inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+      }`}
+    >
+      <div className="relative shrink-0 w-14 h-14">
+        <div className="w-14 h-14 rounded-2xl bg-brand-gradient text-white grid place-items-center shadow-lg shadow-primary/30">
+          <s.icon className="w-6 h-6" />
+        </div>
+        <span className="absolute -top-2 -right-2 w-7 h-7 rounded-full bg-card border text-xs font-bold grid place-items-center">
+          {s.step}
+        </span>
+      </div>
+      <div className="pt-1">
+        <h3 className="font-semibold text-lg mb-1.5">{s.title}</h3>
+        <p className="text-sm text-muted-foreground leading-relaxed max-w-sm">{s.desc}</p>
+      </div>
+    </div>
+  );
+}
 
 export default function HowItWorks() {
   return (
     <section id="how" className="relative bg-muted/30 border-y overflow-hidden">
       <div className="absolute inset-0 bg-grid mask-fade opacity-60" />
-      <div className="relative max-w-5xl mx-auto px-4 sm:px-6 py-20 sm:py-24">
+      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-20 sm:py-24">
         <div className="text-center mb-16 max-w-2xl mx-auto">
           <p className="inline-block text-primary text-xs font-semibold uppercase tracking-widest mb-3 px-3 py-1 rounded-full bg-primary/10">
             Simple Process
@@ -17,24 +57,25 @@ export default function HowItWorks() {
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-6 relative">
-          {/* connecting line */}
-          <div className="hidden md:block absolute top-7 left-[16%] right-[16%] h-px bg-gradient-to-r from-primary/0 via-primary/40 to-primary/0" />
-
-          {STEPS.map((s) => (
-            <div key={s.step} className="relative text-center">
-              <div className="relative mx-auto mb-6 w-14 h-14">
-                <div className="w-14 h-14 rounded-2xl bg-brand-gradient text-white grid place-items-center shadow-lg shadow-primary/30">
-                  <s.icon className="w-6 h-6" />
-                </div>
-                <span className="absolute -top-2 -right-2 w-7 h-7 rounded-full bg-card border text-xs font-bold grid place-items-center">
-                  {s.step}
-                </span>
-              </div>
-              <h3 className="font-semibold text-lg mb-2">{s.title}</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed max-w-xs mx-auto">{s.desc}</p>
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-start">
+          {/* Live demo — sticky beside the steps on desktop */}
+          <div className="lg:sticky lg:top-28">
+            <div className="-mx-4 sm:mx-auto sm:max-w-[440px]">
+              <iframe
+                src="/chatbot-demo.html"
+                title="ReportCraft chat demo"
+                className="w-full h-[900px] border-0 block"
+                loading="lazy"
+              />
             </div>
-          ))}
+          </div>
+
+          {/* Steps */}
+          <div className="flex flex-col gap-12 sm:gap-16 lg:py-8">
+            {STEPS.map((s) => (
+              <StepItem key={s.step} s={s} />
+            ))}
+          </div>
         </div>
 
         <div className="text-center mt-14">

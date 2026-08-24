@@ -4,6 +4,7 @@ import {
   Hero,
   Stats,
   Features,
+  HowItWorks,
   ReportIncludes,
   CTABanner,
   LandingFooter,
@@ -17,10 +18,12 @@ export default function Home() {
       <Hero />
 
       {/* Information sections — what ReportCraft offers, in order.
-          LogoMarquee, HowItWorks, Industries and Testimonials were dropped:
-          the hero's own industries strip and capability banner already
-          cover that ground, so those sections were pure repetition. */}
+          LogoMarquee, Industries and Testimonials were dropped: the hero's
+          own industries strip and capability banner already cover that
+          ground, so those sections were pure repetition. HowItWorks is
+          back, redesigned around the live chat demo. */}
       <Features />         {/* Why ReportCraft — core capabilities */}
+      <HowItWorks />       {/* How it works — 3 steps beside the live demo */}
       <ReportIncludes />   {/* What's inside every report — deliverables */}
 
       {/* Proof & conversion */}
