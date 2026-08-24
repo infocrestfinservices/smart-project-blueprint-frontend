@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import {
   Accordion, AccordionItem, AccordionTrigger, AccordionContent,
 } from "@/components/ui/accordion";
-import { LandingNavbar, CTABanner, LandingFooter } from "@/components/landing";
+import { LandingNavbar, LandingFooter } from "@/components/landing";
 import {
   MessageSquare, Globe2, BarChart3, FileDown, Check, X, ArrowRight,
   Sparkles, FileText, FileSpreadsheet, FileType, IndianRupee, Clock,
@@ -23,18 +23,18 @@ const CAPABILITIES = [
   },
   {
     icon: Globe2,
-    eyebrow: "Localized formats",
-    title: "The exact format your bank expects",
-    desc: "CMA Data for Indian banks, SBA for the USA, Innovate UK grants, PMEGP / Mudra / CGTMSE schemes — generated to the precise structure each institution requires.",
-    points: ["India · USA · UK · UAE", "Govt scheme templates built-in", "Lender-ready, not generic"],
+    eyebrow: "Bank formats",
+    title: "The exact CMA format your bank expects",
+    desc: "CMA Data generated to the precise structure Indian banks require for a project or working-capital loan — no manual reformatting needed.",
+    points: ["CMA Data, India", "Bank-ready structure", "Lender-ready, not generic"],
     visual: "formats",
   },
   {
     icon: BarChart3,
-    eyebrow: "Investor-grade financials",
-    title: "Every metric a lender or VC checks",
-    desc: "DSCR, Current Ratio, IRR, Payback, MOIC and full P&L projections — calculated and rendered as interactive charts inside the report.",
-    points: ["Live P&L & cash-flow charts", "Ratio analysis vs benchmarks", "5-year projections"],
+    eyebrow: "Lender-grade financials",
+    title: "Every ratio a bank checks before approving",
+    desc: "DSCR, Current Ratio, Payback Period and a full 5-year P&L projection — calculated and rendered as interactive charts inside the report.",
+    points: ["Live P&L & cash-flow charts", "Ratio analysis vs bank benchmarks", "5-year projections"],
     visual: "metrics",
   },
   {
@@ -55,15 +55,6 @@ const COMPARISON = [
   { label: "Interactive financial charts", rc: true, ca: false, diy: false },
   { label: "Unlimited revisions", rc: true, ca: false, diy: true },
   { label: "PDF / Word / Excel export", rc: true, ca: false, diy: false },
-  { label: "Investor metrics (IRR, MOIC)", rc: true, ca: "Sometimes", diy: false },
-];
-
-// ── Supported formats by region ──────────────────────────────────────────────
-const REGIONS = [
-  { flag: "🇮🇳", country: "India", items: ["CMA Data (SBI, PNB, BoB)", "PMEGP · Mudra · CGTMSE", "Stand-Up India"] },
-  { flag: "🇺🇸", country: "United States", items: ["SBA 7(a) / 504", "Bank business plan", "Investor pitch pack"] },
-  { flag: "🇬🇧", country: "United Kingdom", items: ["Innovate UK grants", "Start Up Loans", "Bank lending pack"] },
-  { flag: "🌍", country: "Global / Investors", items: ["VC term-sheet model", "PE diligence pack", "Feasibility study"] },
 ];
 
 // ── Export formats ───────────────────────────────────────────────────────────
@@ -76,9 +67,8 @@ const EXPORTS = [
 // ── FAQ ──────────────────────────────────────────────────────────────────────
 const FAQ = [
   { q: "Is the first report really free?", a: "Yes — your first report is free, no credit card required. You only pay when you need more reports or premium export formats." },
-  { q: "Will banks accept an AI-generated report?", a: "Absolutely. Reports follow the exact CMA / SBA / scheme format each institution expects, with all required ratios and projections. Thousands have been submitted and approved." },
+  { q: "Will banks accept an AI-generated report?", a: "Absolutely. Reports follow the exact CMA Data format Indian banks expect, with all required ratios and projections. Thousands have been submitted and approved." },
   { q: "Can I edit the report after it's generated?", a: "Yes. Export to Word or Excel and edit freely, or regenerate sections by giving the AI new details — revisions are unlimited on paid plans." },
-  { q: "Which countries and schemes are supported?", a: "India (CMA, PMEGP, Mudra, CGTMSE), USA (SBA), UK (Innovate UK, Start Up Loans) and global investor formats — with more added regularly." },
   { q: "How accurate are the financial projections?", a: "The AI builds a complete 5-year model — P&L, cash flow and ratio analysis — based on your inputs and industry benchmarks, rendered as live charts you can verify." },
 ];
 
@@ -99,11 +89,11 @@ export default function FeaturesPage() {
             A closer look at how <span className="text-gradient">ReportCraft AI</span> works
           </h1>
           <p className="text-muted-foreground mt-5 max-w-2xl mx-auto text-lg leading-relaxed">
-            Not just another report builder. Explore the AI interview, localized bank formats,
-            investor-grade financials and one-click exports — in detail.
+            Not just another report builder. Explore the AI interview, bank-ready CMA
+            formatting, lender-grade financials and one-click exports — in detail.
           </p>
           <div className="flex flex-wrap justify-center gap-4 mt-8 text-sm">
-            {["AI interview", "30+ formats", "Live charts", "PDF · Word · Excel"].map((t) => (
+            {["AI interview", "CMA bank format", "Live charts", "PDF · Word · Excel"].map((t) => (
               <span key={t} className="inline-flex items-center gap-1.5 text-muted-foreground">
                 <CheckCircle2 className="w-4 h-4 text-emerald-500" /> {t}
               </span>
@@ -184,36 +174,6 @@ export default function FeaturesPage() {
         </div>
       </section>
 
-      {/* Supported formats by region */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 py-20 sm:py-24">
-        <div className="text-center mb-12 max-w-2xl mx-auto">
-          <p className="inline-block text-primary text-xs font-semibold uppercase tracking-widest mb-3 px-3 py-1 rounded-full bg-primary/10">
-            Coverage
-          </p>
-          <h2 className="text-3xl sm:text-4xl font-heading font-bold tracking-tight">
-            Built for your region &amp; your scheme
-          </h2>
-          <p className="text-muted-foreground mt-3">
-            One platform, every format banks, governments and investors ask for.
-          </p>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {REGIONS.map((r) => (
-            <div key={r.country} className="rounded-3xl border bg-card p-6 hover:shadow-xl hover:-translate-y-0.5 transition-all">
-              <div className="text-3xl mb-3">{r.flag}</div>
-              <h3 className="font-semibold text-lg mb-3">{r.country}</h3>
-              <ul className="space-y-2">
-                {r.items.map((it) => (
-                  <li key={it} className="flex items-start gap-2 text-sm text-muted-foreground">
-                    <Check className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" /> {it}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-      </section>
-
       {/* Export formats */}
       <section className="bg-muted/30 border-y">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-20 sm:py-24">
@@ -267,7 +227,6 @@ export default function FeaturesPage() {
         </Accordion>
       </section>
 
-      <CTABanner />
       <LandingFooter />
     </div>
   );
@@ -304,7 +263,7 @@ function CapabilityVisual({ kind }) {
     return (
       <Frame>
         <div className="grid grid-cols-2 gap-3">
-          {["CMA Data", "SBA 7(a)", "PMEGP", "Innovate UK", "Mudra Loan", "VC Model"].map((f, i) => (
+          {["CMA Data", "SBI Format", "PNB Format", "BoB Format", "HDFC Format", "ICICI Format"].map((f, i) => (
             <div key={f} className={`rounded-xl border px-3 py-4 text-center text-sm font-medium ${i === 0 ? "bg-brand-gradient text-white border-transparent" : "bg-muted/40"}`}>
               {f}
             </div>
@@ -328,7 +287,7 @@ function CapabilityVisual({ kind }) {
           </div>
         </div>
         <div className="grid grid-cols-3 gap-2">
-          {[{ k: "DSCR", v: "1.82" }, { k: "IRR", v: "24.6%" }, { k: "MOIC", v: "3.4x" }].map((m) => (
+          {[{ k: "DSCR", v: "1.82" }, { k: "Current Ratio", v: "1.4" }, { k: "Payback", v: "3.1 yr" }].map((m) => (
             <div key={m.k} className="rounded-xl border bg-muted/40 px-2 py-2 text-center">
               <p className="text-[11px] text-muted-foreground">{m.k}</p>
               <p className="text-sm font-bold">{m.v}</p>
