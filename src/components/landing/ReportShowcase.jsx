@@ -1,17 +1,15 @@
 import React from "react";
-import { FileText, ImageUp } from "lucide-react";
+import { FileText } from "lucide-react";
+import skilledapp from "@/assets/reports/skilledapp.webp";
+import hardcider from "@/assets/reports/hardcider.webp";
+import majorcityVilla from "@/assets/reports/majorcity-villa.webp";
 
-// Real screenshots of generated reports, dropped in once available:
-//   import shot1 from "@/assets/reports/shot1.png";
-//   ...
-//   const SCREENSHOTS = [shot1, shot2, shot3, shot4];
-const SCREENSHOTS = [];
+const SCREENSHOTS = [skilledapp, hardcider, majorcityVilla];
 
-// A tall browser-chrome frame with the screenshots scrolling continuously
-// inside it. Falls back to a friendly placeholder until the real
-// screenshots are dropped into SCREENSHOTS above.
+// A tall browser-chrome frame with real report screenshots scrolling
+// continuously through it, looped seamlessly (the list is doubled).
 export default function ReportShowcase() {
-  const looped = SCREENSHOTS.length ? [...SCREENSHOTS, ...SCREENSHOTS] : null;
+  const looped = [...SCREENSHOTS, ...SCREENSHOTS];
 
   return (
     <div className="relative mx-auto w-full max-w-sm">
@@ -28,27 +26,17 @@ export default function ReportShowcase() {
         </div>
 
         <div className="relative h-[520px] overflow-hidden [mask-image:linear-gradient(to_bottom,transparent,#000_8%,#000_92%,transparent)]">
-          {looped ? (
-            <div className="flex flex-col gap-4 p-4 animate-marquee-vertical">
-              {looped.map((src, i) => (
-                <img
-                  key={i}
-                  src={src}
-                  alt="ReportCraft AI generated report"
-                  className="w-full rounded-lg border border-border shadow-sm"
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="h-full flex flex-col items-center justify-center gap-3 text-center px-8">
-              <span className="w-12 h-12 rounded-2xl bg-primary/10 text-primary grid place-items-center">
-                <ImageUp className="w-6 h-6" />
-              </span>
-              <p className="text-sm text-muted-foreground">
-                Live screenshots of real generated reports go here.
-              </p>
-            </div>
-          )}
+          <div className="flex flex-col gap-4 p-4 animate-marquee-vertical pause-on-hover">
+            {looped.map((src, i) => (
+              <img
+                key={i}
+                src={src}
+                alt="ReportCraft AI generated report"
+                className="w-full rounded-lg border border-border shadow-sm"
+                loading="lazy"
+              />
+            ))}
+          </div>
         </div>
       </div>
     </div>
