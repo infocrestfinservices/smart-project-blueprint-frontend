@@ -23,14 +23,16 @@ export default function ReportIncludes() {
           {REPORT_INCLUDES.map((item) => (
             <div
               key={item.title}
-              className="flex gap-4 rounded-2xl border border-border bg-card p-6 transition-colors hover:bg-card"
+              className="relative flex gap-4 rounded-2xl overflow-hidden p-6 shadow-lg shadow-primary/15"
             >
-              <span className="shrink-0 w-11 h-11 rounded-xl bg-accent text-accent-foreground grid place-items-center">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary-hover to-primary" />
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_15%,rgba(255,255,255,0.25),transparent_55%)]" />
+              <span className="relative shrink-0 w-11 h-11 rounded-xl bg-white/15 text-white grid place-items-center">
                 <item.icon className="w-5 h-5" />
               </span>
-              <div>
-                <h3 className="font-semibold mb-1.5">{item.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
+              <div className="relative">
+                <h3 className="font-semibold mb-1.5 text-white">{item.title}</h3>
+                <p className="text-sm text-white/75 leading-relaxed">{item.desc}</p>
               </div>
             </div>
           ))}

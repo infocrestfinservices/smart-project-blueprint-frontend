@@ -2,13 +2,9 @@ import React from "react";
 import {
   LandingNavbar,
   Hero,
-  LogoMarquee,
   Stats,
   Features,
-  HowItWorks,
-  Industries,
   ReportIncludes,
-  Testimonials,
   CTABanner,
   LandingFooter,
 } from "@/components/landing";
@@ -20,16 +16,15 @@ export default function Home() {
       <LandingNavbar />
       <Hero />
 
-      {/* Information sections — what ReportCraft offers, in order */}
-      <LogoMarquee />      {/* Formats banks & schemes expect */}
+      {/* Information sections — what ReportCraft offers, in order.
+          LogoMarquee, HowItWorks, Industries and Testimonials were dropped:
+          the hero's own industries strip and capability banner already
+          cover that ground, so those sections were pure repetition. */}
       <Features />         {/* Why ReportCraft — core capabilities */}
-      <HowItWorks />       {/* How it works — 3 steps */}
-      <Industries />       {/* Which industries we cover — 9 sectors */}
       <ReportIncludes />   {/* What's inside every report — deliverables */}
 
       {/* Proof & conversion */}
       <Stats />
-      <Testimonials />
       <CTABanner />
       <LandingFooter />
     </div>

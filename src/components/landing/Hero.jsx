@@ -53,7 +53,7 @@ export default function Hero() {
       <div className="absolute top-[8%] right-[6%] -z-10 w-[360px] h-[360px] bg-emerald-400/10 blur-[120px] rounded-full" />
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-20 sm:pt-28 text-center">
-        <h1 className="text-[2.5rem] sm:text-6xl font-heading font-bold tracking-tight leading-[1.05] animate-fade-up">
+        <h1 className="text-3xl sm:text-[2.75rem] lg:text-5xl font-heading font-semibold tracking-tight leading-[1.15] animate-fade-up">
           Bank <span className="font-body font-normal text-primary">&amp;</span> investor-ready
           <br className="hidden sm:block" />{" "}
           <span className="text-gradient">project reports in minutes</span>
