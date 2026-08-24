@@ -88,44 +88,58 @@ export default function HowItWorksPage() {
         </div>
       </section>
 
-      {/* Vertical timeline */}
-      <section className="max-w-3xl mx-auto px-4 sm:px-6 py-20 sm:py-24">
-        <div className="relative">
-          {/* the rail */}
-          <div className="absolute left-6 top-3 bottom-3 w-px bg-gradient-to-b from-primary/0 via-primary/40 to-primary/0 sm:left-7" />
+      {/* Vertical timeline, beside the live demo clip */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 py-20 sm:py-24">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-start">
+          {/* Live demo — sticky beside the timeline on desktop */}
+          <div className="lg:sticky lg:top-28 order-2 lg:order-1">
+            <div className="-mx-4 sm:mx-auto sm:max-w-[440px]">
+              <iframe
+                src="/chatbot-demo.html"
+                title="ReportCraft chat demo"
+                className="w-full h-[900px] border-0 block"
+                loading="lazy"
+              />
+            </div>
+          </div>
 
-          <div className="space-y-10">
-            {STEPS.map((s, i) => (
-              <div key={s.title} className="relative flex gap-5 sm:gap-7">
-                {/* node */}
-                <div className="relative shrink-0">
-                  <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-brand-gradient text-white grid place-items-center shadow-lg shadow-primary/30">
-                    <s.icon className="w-5 h-5 sm:w-6 sm:h-6" />
-                  </div>
-                  <span className="absolute -top-2 -left-2 w-6 h-6 rounded-full bg-card border text-[11px] font-bold grid place-items-center">
-                    {i + 1}
-                  </span>
-                </div>
+          <div className="relative order-1 lg:order-2">
+            {/* the rail */}
+            <div className="absolute left-6 top-3 bottom-3 w-px bg-gradient-to-b from-primary/0 via-primary/40 to-primary/0 sm:left-7" />
 
-                {/* card */}
-                <div className="flex-1 rounded-2xl border bg-card p-5 sm:p-6 -mt-1 hover:shadow-lg transition-shadow">
-                  <div className="flex items-center justify-between gap-3 mb-1.5">
-                    <h3 className="font-heading font-bold text-lg sm:text-xl">{s.title}</h3>
-                    <span className="inline-flex items-center gap-1 text-xs font-medium text-primary bg-primary/10 px-2.5 py-1 rounded-full shrink-0">
-                      <Clock className="w-3 h-3" /> {s.time}
+            <div className="space-y-10">
+              {STEPS.map((s, i) => (
+                <div key={s.title} className="relative flex gap-5 sm:gap-7">
+                  {/* node */}
+                  <div className="relative shrink-0">
+                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-brand-gradient text-white grid place-items-center shadow-lg shadow-primary/30">
+                      <s.icon className="w-5 h-5 sm:w-6 sm:h-6" />
+                    </div>
+                    <span className="absolute -top-2 -left-2 w-6 h-6 rounded-full bg-card border text-[11px] font-bold grid place-items-center">
+                      {i + 1}
                     </span>
                   </div>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{s.desc}</p>
-                  <div className="flex flex-wrap gap-2 mt-4">
-                    {s.chips.map((c) => (
-                      <span key={c} className="text-xs px-2.5 py-1 rounded-full border bg-muted/40 text-muted-foreground">
-                        {c}
+
+                  {/* card */}
+                  <div className="flex-1 rounded-2xl border bg-card p-5 sm:p-6 -mt-1 hover:shadow-lg transition-shadow">
+                    <div className="flex items-center justify-between gap-3 mb-1.5">
+                      <h3 className="font-heading font-bold text-lg sm:text-xl">{s.title}</h3>
+                      <span className="inline-flex items-center gap-1 text-xs font-medium text-primary bg-primary/10 px-2.5 py-1 rounded-full shrink-0">
+                        <Clock className="w-3 h-3" /> {s.time}
                       </span>
-                    ))}
+                    </div>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{s.desc}</p>
+                    <div className="flex flex-wrap gap-2 mt-4">
+                      {s.chips.map((c) => (
+                        <span key={c} className="text-xs px-2.5 py-1 rounded-full border bg-muted/40 text-muted-foreground">
+                          {c}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </section>
