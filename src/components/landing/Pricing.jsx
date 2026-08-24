@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, X, ArrowRight, Sparkles, Loader2 } from "lucide-react";
-import { PLANS, ONE_TIME } from "./landingData";
+import { PLANS } from "./landingData";
 import { getPaymentConfig, payForPlan, subscribeToPlan, previewCoupon, isLoggedIn } from "@/api/paymentService";
 import { Input } from "@/components/ui/input";
 import { Tag, Check } from "lucide-react";
@@ -232,34 +232,6 @@ export default function Pricing({ showHeader = true }) {
         <p className="text-center text-sm text-muted-foreground mt-10">
           🔒 Secure payments · <Link to="/refund-policy" className="underline hover:text-foreground">7-day money-back guarantee</Link> · Invoice on every plan
         </p>
-
-        {/* One-time purchases */}
-        <div className="mt-16 pt-12 border-t">
-          <div className="text-center mb-8">
-            <p className="text-primary text-sm font-semibold uppercase tracking-widest mb-2">Pay as you go</p>
-            <h4 className="text-2xl sm:text-3xl font-heading font-bold">Or just pay per report</h4>
-            <p className="text-muted-foreground text-sm mt-2">No subscription needed — buy exactly what you need, when you need it.</p>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {ONE_TIME.map((item) => (
-              <div key={item.name} className="bg-card border rounded-2xl p-5 hover:border-primary/50 hover:shadow-md transition-all group">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                    <item.icon className="w-5 h-5 text-primary" />
-                  </div>
-                  <span className="text-xl font-heading font-bold text-primary">{item.price}</span>
-                </div>
-                <p className="font-semibold text-sm mb-1">{item.name}</p>
-                <p className="text-xs text-muted-foreground leading-relaxed">{item.desc}</p>
-                <Link to="/create">
-                  <Button variant="ghost" size="sm" className="w-full mt-4 text-xs gap-1 group-hover:bg-primary/5">
-                    Generate Now <ArrowRight className="w-3 h-3" />
-                  </Button>
-                </Link>
-              </div>
-            ))}
-          </div>
-        </div>
       </div>
     </section>
   );

@@ -2,7 +2,6 @@ import React from "react";
 import {
   LandingNavbar,
   Pricing,
-  Stats,
   CTABanner,
   LandingFooter,
 } from "@/components/landing";
@@ -27,7 +26,6 @@ export default function PricingPage() {
       </section>
 
       <Pricing showHeader={false} />
-      <Stats />
       <CTABanner />
       <LandingFooter />
     </div>

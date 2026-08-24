@@ -1,21 +1,23 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
+import { useHasReports } from "@/lib/useHasReports";
 import { Button } from "@/components/ui/button";
 import Logo from "@/components/Logo";
 import { LogOut, Menu, X, ArrowRight, LayoutDashboard, Shield, Receipt } from "lucide-react";
+import SideKeys from "./SideKeys";
 
 const NAV_LINKS = [
   { label: "Home", to: "/" },
   { label: "Features", to: "/features" },
   { label: "How it works", to: "/how-it-works" },
   { label: "Pricing", to: "/pricing" },
-  { label: "My Reports", to: "/dashboard", auth: true },
 ];
 
 export default function LandingNavbar() {
   const { user, logout } = useAuth();
   const { pathname } = useLocation();
+  const hasReports = useHasReports();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -29,10 +31,11 @@ export default function LandingNavbar() {
   // Close mobile menu on route change
   useEffect(() => setOpen(false), [pathname]);
 
-  const links = NAV_LINKS.filter((l) => !l.auth || user);
   const isActive = (to) => (to === "/" ? pathname === "/" : pathname.startsWith(to));
 
   return (
+    <>
+    <SideKeys />
     <header
       className={`sticky top-0 z-50 transition-all duration-300 ${
         scrolled
@@ -47,7 +50,7 @@ export default function LandingNavbar() {
 
         {/* Center nav — absolutely centered on the header, independent of the logo/actions widths on either side */}
         <nav className="hidden md:flex items-center gap-1.5 text-sm font-medium bg-muted/40 border border-border rounded-full p-1 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-          {links.map((link) => (
+          {NAV_LINKS.map((link) => (
             <Link
               key={link.to}
               to={link.to}
@@ -66,25 +69,9 @@ export default function LandingNavbar() {
         <div className="flex items-center gap-2">
           {user ? (
             <>
-              <Link to="/dashboard" className="hidden sm:block">
-                <Button variant="ghost" size="sm" className="h-9 px-3 gap-1.5">
-                  <LayoutDashboard className="w-4 h-4" /> Dashboard
-                </Button>
-              </Link>
-              {/* Staff only. Hiding the link is a convenience, not the protection — the
-                  /admin endpoints 404 for everyone else regardless of what is rendered. */}
-              <Link to="/account" className="hidden sm:block">
-                <Button variant="ghost" size="sm" className="h-9 px-3 gap-1.5">
-                  <Receipt className="w-4 h-4" /> Account
-                </Button>
-              </Link>
-              {user.is_admin ? (
-                <Link to="/admin" className="hidden sm:block">
-                  <Button variant="ghost" size="sm" className="h-9 px-3 gap-1.5">
-                    <Shield className="w-4 h-4" /> Admin
-                  </Button>
-                </Link>
-              ) : null}
+              {/* Dashboard/Account/Admin live in the left-side key stack (SideKeys)
+                  once the user has a report — keeping this row from crowding out
+                  the centered nav at in-between widths. */}
               <Link to="/create" className="hidden sm:block">
                 <Button size="sm" className="h-9 px-4 gap-1.5">
                   New report <ArrowRight className="w-4 h-4" />
@@ -130,11 +117,11 @@ export default function LandingNavbar() {
       {/* Mobile menu */}
       <div
         className={`md:hidden overflow-hidden border-t border-border glass transition-[max-height] duration-300 ${
-          open ? "max-h-[420px]" : "max-h-0 border-transparent"
+          open ? "max-h-[560px]" : "max-h-0 border-transparent"
         }`}
       >
         <nav className="px-4 py-3 flex flex-col gap-1">
-          {links.map((link) => (
+          {NAV_LINKS.map((link) => (
             <Link
               key={link.to}
               to={link.to}
@@ -147,6 +134,39 @@ export default function LandingNavbar() {
               {link.label}
             </Link>
           ))}
+
+          {/* Dashboard/Account/Admin — same left-key set as desktop (SideKeys),
+              just inline here since a fixed side rail doesn't fit a phone screen. */}
+          {user && hasReports && (
+            <>
+              <Link
+                to="/dashboard"
+                className={`flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium ${
+                  isActive("/dashboard") ? "bg-muted text-foreground" : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
+                }`}
+              >
+                <LayoutDashboard className="w-4 h-4" /> My Reports
+              </Link>
+              {user.is_admin && (
+                <Link
+                  to="/admin"
+                  className={`flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium ${
+                    isActive("/admin") ? "bg-muted text-foreground" : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
+                  }`}
+                >
+                  <Shield className="w-4 h-4" /> Admin
+                </Link>
+              )}
+              <Link
+                to="/account"
+                className={`flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium ${
+                  isActive("/account") ? "bg-muted text-foreground" : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
+                }`}
+              >
+                <Receipt className="w-4 h-4" /> Account
+              </Link>
+            </>
+          )}
 
           <div className="flex gap-2 pt-2">
             {user ? (
@@ -182,5 +202,6 @@ export default function LandingNavbar() {
         </nav>
       </div>
     </header>
+    </>
   );
 }
