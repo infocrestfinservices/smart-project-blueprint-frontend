@@ -15,7 +15,7 @@ export default function Hero() {
       <div className="absolute top-[8%] right-[6%] -z-10 w-[360px] h-[360px] bg-emerald-400/10 blur-[120px] rounded-full" />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-20 sm:pt-28">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-10 items-center">
+        <div className="grid lg:grid-cols-[1fr_1.15fr] gap-12 lg:gap-10 items-center">
           {/* Left: heading */}
           <div className="text-center lg:text-left">
             <h1 className="text-4xl sm:text-5xl lg:text-[2.75rem] xl:text-5xl font-heading font-bold tracking-tight leading-[1.15] text-primary animate-fade-up">

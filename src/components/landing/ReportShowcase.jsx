@@ -15,15 +15,15 @@ const COLUMNS = [
 
 export default function ReportShowcase() {
   return (
-    <div className="relative mx-auto w-full max-w-lg">
+    <div className="relative mx-auto w-full max-w-xl">
       <div className="absolute inset-x-6 -top-4 h-32 bg-brand-gradient blur-3xl opacity-20 -z-10" />
 
       <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground bg-card border border-border rounded-full px-3 py-1.5 w-fit mx-auto mb-4 shadow-sm">
         <Sparkles className="w-3.5 h-3.5 text-primary" /> Real reports, real numbers
       </div>
 
-      <div className="relative h-[600px] overflow-hidden rounded-2xl [mask-image:linear-gradient(to_bottom,transparent,#000_6%,#000_94%,transparent)]">
-        <div className="grid grid-cols-3 gap-3 h-full">
+      <div className="relative h-[440px] overflow-hidden rounded-2xl [mask-image:linear-gradient(to_bottom,transparent,#000_6%,#000_94%,transparent)]">
+        <div className="grid grid-cols-3 gap-2.5 h-full">
           {COLUMNS.map((col, ci) => {
             const looped = [col.image, col.image, col.image, col.image];
             return (
