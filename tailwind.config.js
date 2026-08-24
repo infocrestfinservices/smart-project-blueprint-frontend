@@ -105,12 +105,20 @@ module.exports = {
   				from: { transform: 'translateX(0)' },
   				to: { transform: 'translateX(-50%)' }
   			},
+  			'marquee-vertical': {
+  				from: { transform: 'translateY(0)' },
+  				to: { transform: 'translateY(-50%)' }
+  			},
   			'shimmer': {
   				'100%': { transform: 'translateX(100%)' }
   			},
   			'grow-bar': {
   				from: { transform: 'scaleY(0)' },
   				to: { transform: 'scaleY(1)' }
+  			},
+  			'bar-wave': {
+  				'0%, 100%': { transform: 'scaleY(0.55)' },
+  				'50%': { transform: 'scaleY(1)' }
   			},
   			'pulse-ring': {
   				'0%': { transform: 'scale(0.9)', opacity: '0.6' },
@@ -125,7 +133,9 @@ module.exports = {
   			'float': 'float 6s ease-in-out infinite',
   			'float-slow': 'float-slow 9s ease-in-out infinite',
   			'marquee': 'marquee 28s linear infinite',
+  			'marquee-vertical': 'marquee-vertical 22s linear infinite',
   			'grow-bar': 'grow-bar 0.9s cubic-bezier(0.16, 1, 0.3, 1) both',
+  			'bar-wave': 'bar-wave 2.6s ease-in-out infinite',
   			'pulse-ring': 'pulse-ring 2.4s cubic-bezier(0.16, 1, 0.3, 1) infinite'
   		}
   	}

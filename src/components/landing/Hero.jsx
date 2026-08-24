@@ -1,15 +1,10 @@
 import React from "react";
-import { Layers, Globe2, Download, BarChart3 } from "lucide-react";
+import { Link } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import FinanceBackdrop from "./FinanceBackdrop";
 import IndustriesShowcase from "./IndustriesShowcase";
-
-// Concrete app capabilities — what ReportCraft actually produces.
-const CAPABILITIES = [
-  { icon: Layers, label: "9 industry templates", sub: "Agri · Tech · Mfg · more" },
-  { icon: Globe2, label: "CMA · SBA · Mudra · PMEGP", sub: "Bank & scheme formats" },
-  { icon: BarChart3, label: "DSCR · IRR · MOIC", sub: "Lender-grade metrics" },
-  { icon: Download, label: "PDF · Word · Excel", sub: "Submission-ready export" },
-];
+import ReportShowcase from "./ReportShowcase";
 
 export default function Hero() {
   return (
@@ -19,26 +14,37 @@ export default function Hero() {
       <div className="absolute top-[-12%] left-1/2 -translate-x-1/2 -z-10 w-[820px] h-[440px] bg-primary/10 blur-[130px] rounded-full" />
       <div className="absolute top-[8%] right-[6%] -z-10 w-[360px] h-[360px] bg-emerald-400/10 blur-[120px] rounded-full" />
 
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-20 sm:pt-28 text-center">
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-heading font-bold tracking-tight leading-[1.1] text-primary animate-fade-up">
-          Bank <span className="font-body font-normal">&amp;</span> Investor-Ready
-          <br className="hidden sm:block" />{" "}
-          <span className="text-gradient">project reports in minutes</span>
-        </h1>
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-20 sm:pt-28">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-10 items-center">
+          {/* Left: heading */}
+          <div className="text-center lg:text-left">
+            <h1 className="text-4xl sm:text-5xl lg:text-[2.75rem] xl:text-5xl font-heading font-bold tracking-tight leading-[1.15] text-primary animate-fade-up">
+              Bank <span className="font-body font-normal">&amp;</span> Investor-Ready
+              <br />
+              <span className="text-gradient">project reports in minutes</span>
+            </h1>
+            <p className="text-muted-foreground mt-5 text-base sm:text-lg max-w-md mx-auto lg:mx-0 animate-fade-up animation-delay-200">
+              AI-generated CMA reports, submission-ready in minutes — DSCR, IRR and a full
+              5-year model, formatted exactly the way your bank expects.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 mt-8 justify-center lg:justify-start animate-fade-up animation-delay-300">
+              <Link to="/create">
+                <Button size="lg" className="h-12 px-7 text-base gap-2 shadow-xl shadow-primary/30 w-full sm:w-auto group">
+                  Create free report
+                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                </Button>
+              </Link>
+              <Link to="/how-it-works">
+                <Button size="lg" variant="outline" className="h-12 px-7 text-base w-full sm:w-auto">
+                  See how it works
+                </Button>
+              </Link>
+            </div>
+          </div>
 
-        {/* Capability strip — one unified banner, icon-over-stat style */}
-        <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden mt-10 shadow-xl shadow-primary/20 animate-fade-up animation-delay-200">
-          <div className="absolute inset-0 bg-gradient-to-r from-primary via-primary-hover to-primary" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,rgba(255,255,255,0.28),transparent_60%)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_92%_100%,rgba(16,185,129,0.35),transparent_55%)]" />
-          <div className="relative grid grid-cols-2 sm:grid-cols-4 divide-y divide-x sm:divide-y-0 divide-white/15">
-            {CAPABILITIES.map((c) => (
-              <div key={c.label} className="flex flex-col items-center text-center px-4 py-7 sm:py-9">
-                <c.icon className="w-7 h-7 sm:w-8 sm:h-8 text-white mb-3" strokeWidth={1.5} />
-                <p className="text-white font-bold text-base sm:text-lg leading-snug">{c.label}</p>
-                <p className="text-white/70 text-xs sm:text-sm mt-1">{c.sub}</p>
-              </div>
-            ))}
+          {/* Right: real generated reports, scrolling */}
+          <div className="animate-fade-up animation-delay-200">
+            <ReportShowcase />
           </div>
         </div>
       </div>

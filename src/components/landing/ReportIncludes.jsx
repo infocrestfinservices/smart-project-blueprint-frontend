@@ -25,7 +25,7 @@ export default function ReportIncludes() {
               key={item.title}
               className="relative flex gap-4 rounded-2xl overflow-hidden p-6 shadow-lg shadow-primary/15"
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary-hover to-primary" />
+              <div className="absolute inset-0 bg-brand-gradient" />
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_15%,rgba(255,255,255,0.25),transparent_55%)]" />
               <span className="relative shrink-0 w-11 h-11 rounded-xl bg-white/15 text-white grid place-items-center">
                 <item.icon className="w-5 h-5" />

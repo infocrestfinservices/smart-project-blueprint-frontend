@@ -49,8 +49,8 @@ export default function Features() {
             {GRAPH_BARS.map((h, i) => (
               <div
                 key={i}
-                className="flex-1 rounded-t-md bg-white/25 origin-bottom animate-grow-bar"
-                style={{ height: `${h}%`, animationDelay: `${i * 0.06}s` }}
+                className="flex-1 rounded-t-md bg-white/25 origin-bottom animate-bar-wave"
+                style={{ height: `${h}%`, animationDelay: `${i * 0.18}s` }}
               />
             ))}
           </div>
