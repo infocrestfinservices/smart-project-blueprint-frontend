@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,6 +10,35 @@ import {
   Sparkles, FileText, FileSpreadsheet, FileType, IndianRupee, Clock,
   CheckCircle2, Bot, User,
 } from "lucide-react";
+
+// Re-reveals each row as it scrolls into view — the page reads static
+// otherwise, since nothing on it moves until you interact with the FAQ.
+function useInView(threshold = 0.25) {
+  const ref = useRef(null);
+  const [inView, setInView] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(([entry]) => setInView(entry.isIntersecting), { threshold });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+  return [ref, inView];
+}
+
+function Reveal({ children, className = "" }) {
+  const [ref, inView] = useInView();
+  return (
+    <div
+      ref={ref}
+      className={`transition-all duration-700 ease-out ${
+        inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+      } ${className}`}
+    >
+      {children}
+    </div>
+  );
+}
 
 // ── Deep-dive capabilities (alternating rows) ────────────────────────────────
 const CAPABILITIES = [
@@ -81,18 +110,20 @@ export default function FeaturesPage() {
       <section className="relative overflow-hidden border-b">
         <div className="absolute inset-0 -z-10 bg-grid mask-fade" />
         <div className="absolute inset-0 -z-10 bg-gradient-to-b from-primary/[0.07] to-background" />
+        <div className="absolute top-[-10%] left-[8%] -z-10 w-72 h-72 bg-primary/10 blur-[100px] rounded-full animate-float-slow" />
+        <div className="absolute top-[10%] right-[10%] -z-10 w-56 h-56 bg-emerald-400/10 blur-[90px] rounded-full animate-float" />
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 py-20 sm:py-24 text-center">
-          <span className="inline-flex items-center gap-2 bg-card border shadow-sm text-xs font-semibold px-3 py-1.5 rounded-full mb-6">
+          <span className="inline-flex items-center gap-2 bg-card border shadow-sm text-xs font-semibold px-3 py-1.5 rounded-full mb-6 animate-fade-up">
             <Sparkles className="w-3.5 h-3.5 text-primary" /> Platform features
           </span>
-          <h1 className="text-4xl sm:text-5xl font-heading font-bold tracking-tight leading-[1.05]">
+          <h1 className="text-4xl sm:text-5xl font-heading font-bold tracking-tight leading-[1.05] animate-fade-up animation-delay-200">
             A closer look at how <span className="text-gradient">ReportCraft AI</span> works
           </h1>
-          <p className="text-muted-foreground mt-5 max-w-2xl mx-auto text-lg leading-relaxed">
+          <p className="text-muted-foreground mt-5 max-w-2xl mx-auto text-lg leading-relaxed animate-fade-up animation-delay-300">
             Not just another report builder. Explore the AI interview, bank-ready CMA
             formatting, lender-grade financials and one-click exports — in detail.
           </p>
-          <div className="flex flex-wrap justify-center gap-4 mt-8 text-sm">
+          <div className="flex flex-wrap justify-center gap-4 mt-8 text-sm animate-fade-up animation-delay-500">
             {["AI interview", "CMA bank format", "Live charts", "PDF · Word · Excel"].map((t) => (
               <span key={t} className="inline-flex items-center gap-1.5 text-muted-foreground">
                 <CheckCircle2 className="w-4 h-4 text-emerald-500" /> {t}
@@ -103,9 +134,11 @@ export default function FeaturesPage() {
       </section>
 
       {/* Deep-dive capability rows */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 py-20 sm:py-24 space-y-20 sm:space-y-28">
+      <section className="relative max-w-6xl mx-auto px-4 sm:px-6 py-20 sm:py-24 space-y-20 sm:space-y-28 overflow-hidden">
+        <div className="absolute top-[15%] right-[-4%] -z-10 w-72 h-72 bg-primary/[0.06] blur-[110px] rounded-full animate-float-slow" />
+        <div className="absolute bottom-[10%] left-[-4%] -z-10 w-64 h-64 bg-emerald-400/[0.08] blur-[100px] rounded-full animate-float" />
         {CAPABILITIES.map((c, i) => (
-          <div
+          <Reveal
             key={c.title}
             className={`grid lg:grid-cols-2 gap-10 lg:gap-16 items-center ${i % 2 === 1 ? "lg:[&>*:first-child]:order-2" : ""}`}
           >
@@ -129,23 +162,23 @@ export default function FeaturesPage() {
             </div>
             {/* Visual */}
             <CapabilityVisual kind={c.visual} />
-          </div>
+          </Reveal>
         ))}
       </section>
 
       {/* Comparison table */}
       <section className="bg-muted/30 border-y">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-20 sm:py-24">
-          <div className="text-center mb-12 max-w-2xl mx-auto">
+          <Reveal className="text-center mb-12 max-w-2xl mx-auto">
             <p className="inline-block text-primary text-xs font-semibold uppercase tracking-widest mb-3 px-3 py-1 rounded-full bg-primary/10">
               The difference
             </p>
             <h2 className="text-3xl sm:text-4xl font-heading font-bold tracking-tight">
               ReportCraft AI vs the old way
             </h2>
-          </div>
+          </Reveal>
 
-          <div className="overflow-x-auto rounded-2xl border bg-card shadow-sm">
+          <Reveal className="overflow-x-auto rounded-2xl border bg-card shadow-sm">
             <table className="w-full text-sm min-w-[640px]">
               <thead>
                 <tr className="border-b">
@@ -170,24 +203,24 @@ export default function FeaturesPage() {
                 ))}
               </tbody>
             </table>
-          </div>
+          </Reveal>
         </div>
       </section>
 
       {/* Export formats */}
       <section className="bg-muted/30 border-y">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-20 sm:py-24">
-          <div className="text-center mb-12 max-w-2xl mx-auto">
+          <Reveal className="text-center mb-12 max-w-2xl mx-auto">
             <p className="inline-block text-primary text-xs font-semibold uppercase tracking-widest mb-3 px-3 py-1 rounded-full bg-primary/10">
               Exports
             </p>
             <h2 className="text-3xl sm:text-4xl font-heading font-bold tracking-tight">
               Download it the way you need it
             </h2>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+          </Reveal>
+          <Reveal className="grid grid-cols-1 sm:grid-cols-3 gap-5">
             {EXPORTS.map((e) => (
-              <div key={e.name} className="rounded-3xl border bg-card p-7 text-center">
+              <div key={e.name} className="rounded-3xl border bg-card p-7 text-center hover:shadow-xl hover:-translate-y-1 transition-all">
                 <div className={`w-14 h-14 rounded-2xl ${e.tint} grid place-items-center mx-auto mb-4`}>
                   <e.icon className="w-7 h-7" />
                 </div>
@@ -195,36 +228,38 @@ export default function FeaturesPage() {
                 <p className="text-sm text-muted-foreground leading-relaxed">{e.desc}</p>
               </div>
             ))}
-          </div>
+          </Reveal>
         </div>
       </section>
 
       {/* FAQ */}
       <section className="max-w-3xl mx-auto px-4 sm:px-6 py-20 sm:py-24">
-        <div className="text-center mb-12">
+        <Reveal className="text-center mb-12">
           <p className="inline-block text-primary text-xs font-semibold uppercase tracking-widest mb-3 px-3 py-1 rounded-full bg-primary/10">
             FAQ
           </p>
           <h2 className="text-3xl sm:text-4xl font-heading font-bold tracking-tight">
             Questions, answered
           </h2>
-        </div>
-        <Accordion type="single" collapsible className="space-y-3">
-          {FAQ.map((f, i) => (
-            <AccordionItem
-              key={i}
-              value={`item-${i}`}
-              className="border rounded-2xl bg-card px-5 data-[state=open]:shadow-sm"
-            >
-              <AccordionTrigger className="text-left font-semibold hover:no-underline py-5">
-                {f.q}
-              </AccordionTrigger>
-              <AccordionContent className="text-muted-foreground leading-relaxed pb-5">
-                {f.a}
-              </AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
+        </Reveal>
+        <Reveal>
+          <Accordion type="single" collapsible className="space-y-3">
+            {FAQ.map((f, i) => (
+              <AccordionItem
+                key={i}
+                value={`item-${i}`}
+                className="border rounded-2xl bg-card px-5 transition-shadow hover:shadow-md data-[state=open]:shadow-sm"
+              >
+                <AccordionTrigger className="text-left font-semibold hover:no-underline py-5">
+                  {f.q}
+                </AccordionTrigger>
+                <AccordionContent className="text-muted-foreground leading-relaxed pb-5">
+                  {f.a}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </Reveal>
       </section>
 
       <LandingFooter />
@@ -282,7 +317,7 @@ function CapabilityVisual({ kind }) {
           </div>
           <div className="h-16 flex items-end gap-1.5">
             {[40, 58, 52, 74, 90].map((h, i) => (
-              <div key={i} className="w-3 rounded-t bg-gradient-to-t from-primary/30 to-primary origin-bottom animate-grow-bar" style={{ height: `${h}%`, animationDelay: `${i * 0.08}s` }} />
+              <div key={i} className="w-3 rounded-t bg-gradient-to-t from-primary/30 to-primary origin-bottom animate-bar-wave" style={{ height: `${h}%`, animationDelay: `${i * 0.15}s` }} />
             ))}
           </div>
         </div>
@@ -322,9 +357,9 @@ function CapabilityVisual({ kind }) {
 
 function Frame({ children }) {
   return (
-    <div className="relative">
-      <div className="absolute inset-0 bg-brand-gradient blur-2xl opacity-10 rounded-3xl" />
-      <div className="relative rounded-2xl border bg-card shadow-xl shadow-primary/5 p-5 sm:p-6">
+    <div className="group relative">
+      <div className="absolute inset-0 bg-brand-gradient blur-2xl opacity-10 group-hover:opacity-20 rounded-3xl transition-opacity" />
+      <div className="relative rounded-2xl border bg-card shadow-xl shadow-primary/5 p-5 sm:p-6 transition-transform duration-300 group-hover:-translate-y-1">
         <div className="flex items-center gap-1.5 mb-4">
           <span className="w-2.5 h-2.5 rounded-full bg-rose-400" />
           <span className="w-2.5 h-2.5 rounded-full bg-amber-400" />

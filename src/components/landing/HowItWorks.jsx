@@ -60,12 +60,12 @@ export default function HowItWorks() {
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-start">
           {/* Live demo — sticky beside the steps on desktop */}
           <div className="lg:sticky lg:top-28">
-            <div className="-mx-4 sm:mx-auto sm:max-w-[374px]">
-              <div className="relative h-[765px] overflow-hidden">
+            <div className="mx-auto w-[264px]">
+              <div className="relative h-[540px] overflow-hidden">
                 <iframe
                   src="/chatbot-demo.html"
                   title="ReportCraft chat demo"
-                  className="absolute top-0 left-0 w-[440px] h-[900px] border-0 origin-top-left scale-[0.85]"
+                  className="absolute top-0 left-0 w-[440px] h-[900px] border-0 origin-top-left scale-[0.6]"
                   loading="lazy"
                 />
               </div>
