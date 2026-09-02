@@ -12,10 +12,10 @@ const BACKEND_API_URL = `${BACKEND_URL}/ai/invoke`;
 /**
  * Invoke an LLM with a prompt and return the text response.
  * The /ai/invoke endpoint requires authentication, so we attach the JWT.
- * @param {{ prompt: string, model?: string }} params
+ * @param {{ prompt: string, model?: string, project_id?: number }} params
  * @returns {Promise<string>} The text response from the LLM
  */
-export async function invokeLLM({ prompt, model = "claude_sonnet_4_6" }) {
+export async function invokeLLM({ prompt, model = "claude_sonnet_4_6", project_id = null }) {
   const token = localStorage.getItem("rc_auth_token");
   const headers = { "Content-Type": "application/json" };
   if (token) headers["Authorization"] = `Bearer ${token}`;
@@ -26,6 +26,7 @@ export async function invokeLLM({ prompt, model = "claude_sonnet_4_6" }) {
     body: JSON.stringify({
       prompt: prompt,
       model: model,
+      project_id: project_id,
     }),
   });
 

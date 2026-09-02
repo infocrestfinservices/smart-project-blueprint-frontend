@@ -391,7 +391,10 @@ FORMATTING RULES:
 - Use ## for sections, ### for sub-sections.
 - Keep the same section structure as the original report but update all numbers.`;
 
-      const newContent = await invokeLLM({ prompt, model: "claude_sonnet_4_6" });
+      // project_id tells the backend this is a regeneration of an already-generated,
+      // already-paid-for report — not a new one — so it isn't blocked by the plan's
+      // report quota (see routers/ai_router.py).
+      const newContent = await invokeLLM({ prompt, model: "claude_sonnet_4_6", project_id: Number(report.id) });
       await reportStorage.update(report.id, { report_content: newContent });
       setReport(prev => ({ ...prev, report_content: newContent }));
       setEditedContent(newContent);
