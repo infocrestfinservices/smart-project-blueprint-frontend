@@ -4,7 +4,7 @@ import { useAuth } from "@/lib/AuthContext";
 import { useHasReports } from "@/lib/useHasReports";
 import { Button } from "@/components/ui/button";
 import Logo from "@/components/Logo";
-import { LogOut, Menu, X, ArrowRight, LayoutDashboard, Shield, Receipt } from "lucide-react";
+import { LogOut, Menu, X, ArrowRight, LayoutDashboard, Shield, Receipt, User as UserIcon } from "lucide-react";
 import SideKeys from "./SideKeys";
 
 const NAV_LINKS = [
@@ -76,6 +76,18 @@ export default function LandingNavbar() {
                 <Button size="sm" className="h-9 px-4 gap-1.5">
                   New report <ArrowRight className="w-4 h-4" />
                 </Button>
+              </Link>
+              {/* Always reachable once logged in — unlike the SideKeys rail, which only
+                  earns its place after a first report exists (a brand-new, just-verified
+                  account still needs somewhere to land). */}
+              <Link
+                to="/profile"
+                className={`hidden sm:inline-flex h-9 w-9 items-center justify-center rounded-full border transition-colors ${
+                  isActive("/profile") ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
+                }`}
+                aria-label="Profile"
+              >
+                <UserIcon className="w-4 h-4" />
               </Link>
               <Button
                 variant="ghost"
@@ -166,6 +178,16 @@ export default function LandingNavbar() {
                 <Receipt className="w-4 h-4" /> Account
               </Link>
             </>
+          )}
+          {user && (
+            <Link
+              to="/profile"
+              className={`flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium ${
+                isActive("/profile") ? "bg-muted text-foreground" : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
+              }`}
+            >
+              <UserIcon className="w-4 h-4" /> Profile
+            </Link>
           )}
 
           <div className="flex gap-2 pt-2">

@@ -1,4 +1,5 @@
 import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
+import { useTheme } from 'next-themes';
 import { authService } from '@/api/authService';
 
 const AuthContext = createContext();
@@ -47,6 +48,10 @@ export const AuthProvider = ({ children }) => {
   // Only block the app on startup when there is a token to validate.
   const [isLoadingAuth, setIsLoadingAuth] = useState(hasToken);
   const [authChecked, setAuthChecked] = useState(!hasToken);
+  // Whatever the account has saved (see Profile > Settings), applied on top of whatever
+  // next-themes already restored from localStorage for this browser — this is what makes
+  // the preference follow the account across devices instead of staying per-browser.
+  const { setTheme } = useTheme();
 
   const isAuthenticated = !!user;
 
@@ -67,9 +72,11 @@ export const AuthProvider = ({ children }) => {
       // is_admin decides whether the Admin link exists at all. The BACKEND decides whether
       // the routes answer — this flag only saves showing a door that would 404.
       const sessionUser = { id: me.id, email: me.email, full_name: me.full_name,
-                            plan: me.plan, is_admin: Boolean(me.is_admin) };
+                            plan: me.plan, is_admin: Boolean(me.is_admin),
+                            avatar_url: me.avatar_url };
       persistSession(null, sessionUser);
       setUser(sessionUser);
+      if (me.theme_preference) setTheme(me.theme_preference);
     } catch {
       clearSession();
       setUser(null);
@@ -77,7 +84,7 @@ export const AuthProvider = ({ children }) => {
       setAuthChecked(true);
       setIsLoadingAuth(false);
     }
-  }, []);
+  }, [setTheme]);
 
   useEffect(() => {
     if (hasToken) checkUserAuth();
@@ -86,12 +93,31 @@ export const AuthProvider = ({ children }) => {
 
   // Authenticate with email + password. Throws an Error (with a readable
   // message) on failure so callers can surface it.
+  //
+  // When the account has 2FA on, the backend answers with a challenge instead of a token
+  // (see routers/auth_router.py) — this returns that shape ({ requires_2fa, challenge_token })
+  // unchanged rather than treating it as a session, so the caller (Login.jsx) can prompt for
+  // the code. No token is stored and the user stays logged out until completeTwoFactorLogin.
   const login = async (email, password) => {
     const data = await authService.login({ email, password });
+    if (data.requires_2fa) return data;
     const sessionUser = { id: data.user_id, email: data.email, full_name: data.full_name };
     persistSession(data.access_token, sessionUser);
     setUser(sessionUser);
     setAuthChecked(true);
+    checkUserAuth(); // fills in plan/avatar/theme in the background; the fields above are enough to route past ProtectedRoute immediately
+    return sessionUser;
+  };
+
+  // Second half of a 2FA login: exchanges the challenge_token + a TOTP or backup code for
+  // a real session, the same way `login` does for a password.
+  const completeTwoFactorLogin = async (challengeToken, code) => {
+    const data = await authService.verifyTwoFactorLogin(challengeToken, code);
+    const sessionUser = { id: data.user_id, email: data.email, full_name: data.full_name };
+    persistSession(data.access_token, sessionUser);
+    setUser(sessionUser);
+    setAuthChecked(true);
+    checkUserAuth();
     return sessionUser;
   };
 
@@ -127,6 +153,7 @@ export const AuthProvider = ({ children }) => {
       appPublicSettings: {},
       authChecked,
       login,
+      completeTwoFactorLogin,
       register,
       logout,
       navigateToLogin,

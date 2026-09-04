@@ -61,6 +61,11 @@ export const authService = {
   login: ({ email, password }) =>
     request("/auth/login", { body: { email, password } }),
 
+  // Second factor: exchanges the challenge_token from login() + a TOTP/backup code for a
+  // real access token. See routers/auth_router.py:verify_login_2fa.
+  verifyTwoFactorLogin: (challenge_token, code) =>
+    request("/auth/2fa/verify-login", { body: { challenge_token, code } }),
+
   me: (token) => request("/auth/me", { method: "GET", token }),
 
   forgotPassword: (email) =>

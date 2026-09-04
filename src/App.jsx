@@ -21,6 +21,7 @@ import CreateReport from '@/pages/CreateReport';
 import ViewReport from '@/pages/ViewReport';
 import Dashboard from '@/pages/Dashboard';
 import Account from '@/pages/Account';
+import Profile from '@/pages/Profile';
 import Admin from '@/pages/Admin';
 
 const AuthenticatedApp = () => {
@@ -65,6 +66,7 @@ const AuthenticatedApp = () => {
         <Route path="/create" element={<CreateReport />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/account" element={<Account />} />
+        <Route path="/profile" element={<Profile />} />
         <Route path="/report/:id" element={<ViewReport />} />
         {/* Staff only. The page itself redirects a non-admin away, and every /admin
             endpoint it calls 404s server-side — the route being reachable buys nothing. */}

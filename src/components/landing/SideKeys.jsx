@@ -2,7 +2,7 @@ import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
 import { useHasReports } from "@/lib/useHasReports";
-import { LayoutDashboard, Shield, Receipt } from "lucide-react";
+import { LayoutDashboard, Shield, Receipt, User } from "lucide-react";
 
 // Small pill "keys" stacked down the left edge of the screen — replaces the
 // Dashboard/Account/Admin buttons that used to crowd the top navbar and
@@ -19,6 +19,7 @@ export default function SideKeys() {
     { label: "My Reports", to: "/dashboard", icon: LayoutDashboard },
     ...(user.is_admin ? [{ label: "Admin", to: "/admin", icon: Shield }] : []),
     { label: "Account", to: "/account", icon: Receipt },
+    { label: "Profile", to: "/profile", icon: User },
   ];
 
   const isActive = (to) => pathname.startsWith(to);

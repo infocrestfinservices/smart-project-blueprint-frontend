@@ -9,19 +9,85 @@ import AuthLayout from "@/components/AuthLayout";
 import PasswordInput from "@/components/PasswordInput";
 
 export default function Login() {
-  const { login } = useAuth();
+  const { login, completeTwoFactorLogin } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  // Set once login() comes back asking for a second factor instead of a session — see
+  // AuthContext.login(). Rendering the code form is what "being on step 2" means here.
+  const [challenge, setChallenge] = useState(null);
+  const [code, setCode] = useState("");
+
+  const handleTwoFactorSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+    try {
+      await completeTwoFactorLogin(challenge, code);
+      window.location.href = "/dashboard";
+    } catch (err) {
+      setError(err.message || "Invalid code");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (challenge) {
+    return (
+      <AuthLayout
+        icon={LogIn}
+        title="Enter your code"
+        subtitle="Open your authenticator app, or use a backup code"
+        footer={
+          <button
+            type="button"
+            className="text-primary font-medium hover:underline"
+            onClick={() => { setChallenge(null); setCode(""); setError(""); }}
+          >
+            Back to login
+          </button>
+        }
+      >
+        {error && (
+          <div className="mb-4 p-3 rounded-lg bg-destructive/10 text-destructive text-sm">
+            {error}
+          </div>
+        )}
+        <form onSubmit={handleTwoFactorSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="code">6-digit code or backup code</Label>
+            <Input
+              id="code"
+              autoFocus
+              placeholder="123456"
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              className="h-12 text-center text-lg tracking-widest"
+              required
+            />
+          </div>
+          <Button type="submit" className="w-full h-12 font-medium" disabled={loading}>
+            {loading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+            Verify
+          </Button>
+        </form>
+      </AuthLayout>
+    );
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
     try {
-      await login(email, password);
+      const result = await login(email, password);
+      if (result?.requires_2fa) {
+        setChallenge(result.challenge_token);
+        setLoading(false);
+        return;
+      }
       window.location.href = "/dashboard";
     } catch (err) {
       if (err.message && err.message.toLowerCase().includes("verify your email")) {
