@@ -124,7 +124,9 @@
     flex-direction:column;
     gap:12px;
     overflow:hidden;
+    transition:opacity .35s ease;
   }
+  .thread.resetting{opacity:0;}
 
   .row{display:flex;opacity:0;transform:translateY(8px);}
   .row.ai{justify-content:flex-start;}
@@ -308,9 +310,24 @@ async function generating(){
   await wait(2600);
 }
 
-async function playOnce(){
+// A visitor can land on this page at ANY point in the loop — including the instant it
+// resets. Swapping `thread.innerHTML = ''` for an instant blank screen meant anyone whose
+// scroll/screenshot happened to catch that split second saw an apparently-broken, empty
+// phone. This fades the old thread out first (so there's always SOMETHING on screen, never
+// a hard cut to blank) and skips that fade — and starts the very first messages sooner —
+// on the very first run, since first paint is the moment most likely to be seen.
+async function resetThread(isFirstRun){
+  if (!isFirstRun){
+    thread.classList.add('resetting');
+    await wait(350);
+  }
   thread.innerHTML = '';
-  await wait(600);
+  thread.classList.remove('resetting');
+}
+
+async function playOnce(isFirstRun){
+  await resetThread(isFirstRun);
+  await wait(isFirstRun ? 150 : 400);
   await aiMessage('Hi Abhay');
   await aiMessage("What's your business idea?");
   await userMessage('A subscription app connecting home bakers with local buyers');
@@ -321,8 +338,10 @@ async function playOnce(){
 }
 
 async function loop(){
+  let first = true;
   while(true){
-    await playOnce();
+    await playOnce(first);
+    first = false;
   }
 }
 
