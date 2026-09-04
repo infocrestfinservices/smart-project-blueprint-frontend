@@ -4,7 +4,6 @@ import { useAuth } from "@/lib/AuthContext";
 import { Button } from "@/components/ui/button";
 import Logo from "@/components/Logo";
 import { LogOut, Menu, X, ArrowRight, User as UserIcon } from "lucide-react";
-import SideKeys from "./SideKeys";
 
 const NAV_LINKS = [
   { label: "Home", to: "/" },
@@ -33,7 +32,8 @@ export default function LandingNavbar() {
 
   return (
     <>
-    <SideKeys />
+    {/* Profile now lives in the pill nav above (with Home/Features/…), so the floating
+        left-edge rail that used to duplicate it here has been removed. */}
     <header
       className={`sticky top-0 z-50 transition-all duration-300 ${
         scrolled
@@ -81,9 +81,6 @@ export default function LandingNavbar() {
         <div className="flex items-center gap-2">
           {user ? (
             <>
-              {/* Dashboard/Account/Admin live in the left-side key stack (SideKeys)
-                  once the user has a report — keeping this row from crowding out
-                  the centered nav at in-between widths. */}
               <Link to="/create" className="hidden sm:block">
                 <Button size="sm" className="h-9 px-4 gap-1.5">
                   New report <ArrowRight className="w-4 h-4" />

@@ -76,24 +76,24 @@ export default function Profile() {
           </div>
         ) : (
           <Tabs defaultValue="basic" className="mt-8">
-            <TabsList className={`grid grid-cols-2 h-auto gap-1 bg-muted/40 p-1 ${profile.is_admin ? "sm:grid-cols-6" : "sm:grid-cols-5"}`}>
-              <TabsTrigger value="basic" className="gap-1.5 text-xs sm:text-sm py-2">
+            <TabsList className="flex w-full overflow-x-auto no-scrollbar h-auto gap-1 bg-muted/40 p-1 justify-start">
+              <TabsTrigger value="basic" className="gap-1.5 text-xs sm:text-sm py-2 shrink-0 whitespace-nowrap">
                 <User className="w-3.5 h-3.5" /> Basic Info
               </TabsTrigger>
-              <TabsTrigger value="plan" className="gap-1.5 text-xs sm:text-sm py-2">
+              <TabsTrigger value="plan" className="gap-1.5 text-xs sm:text-sm py-2 shrink-0 whitespace-nowrap">
                 <CreditCard className="w-3.5 h-3.5" /> Plan
               </TabsTrigger>
-              <TabsTrigger value="reports" className="gap-1.5 text-xs sm:text-sm py-2">
+              <TabsTrigger value="reports" className="gap-1.5 text-xs sm:text-sm py-2 shrink-0 whitespace-nowrap">
                 <FileText className="w-3.5 h-3.5" /> My Reports
               </TabsTrigger>
-              <TabsTrigger value="billing" className="gap-1.5 text-xs sm:text-sm py-2">
+              <TabsTrigger value="billing" className="gap-1.5 text-xs sm:text-sm py-2 shrink-0 whitespace-nowrap">
                 <Receipt className="w-3.5 h-3.5" /> Billing
               </TabsTrigger>
-              <TabsTrigger value="settings" className="gap-1.5 text-xs sm:text-sm py-2">
+              <TabsTrigger value="settings" className="gap-1.5 text-xs sm:text-sm py-2 shrink-0 whitespace-nowrap">
                 <SettingsIcon className="w-3.5 h-3.5" /> Settings
               </TabsTrigger>
               {profile.is_admin && (
-                <TabsTrigger value="admin" className="gap-1.5 text-xs sm:text-sm py-2">
+                <TabsTrigger value="admin" className="gap-1.5 text-xs sm:text-sm py-2 shrink-0 whitespace-nowrap">
                   <Shield className="w-3.5 h-3.5" /> Admin
                 </TabsTrigger>
               )}
