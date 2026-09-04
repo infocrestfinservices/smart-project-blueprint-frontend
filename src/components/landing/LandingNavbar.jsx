@@ -61,6 +61,20 @@ export default function LandingNavbar() {
               {link.label}
             </Link>
           ))}
+          {/* In the same pill as Home/Features/… rather than off on its own — that's the
+              one place logged-in users look for it. */}
+          {user && (
+            <Link
+              to="/profile"
+              className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full transition-colors ${
+                isActive("/profile")
+                  ? "bg-card text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <UserIcon className="w-3.5 h-3.5" /> Profile
+            </Link>
+          )}
         </nav>
 
         {/* Right actions */}
@@ -74,18 +88,6 @@ export default function LandingNavbar() {
                 <Button size="sm" className="h-9 px-4 gap-1.5">
                   New report <ArrowRight className="w-4 h-4" />
                 </Button>
-              </Link>
-              {/* Always reachable once logged in — unlike the SideKeys rail, which only
-                  earns its place after a first report exists (a brand-new, just-verified
-                  account still needs somewhere to land). */}
-              <Link
-                to="/profile"
-                className={`hidden sm:inline-flex h-9 w-9 items-center justify-center rounded-full border transition-colors ${
-                  isActive("/profile") ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
-                }`}
-                aria-label="Profile"
-              >
-                <UserIcon className="w-4 h-4" />
               </Link>
               <Button
                 variant="ghost"
