@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
-import { useHasReports } from "@/lib/useHasReports";
 import { Button } from "@/components/ui/button";
 import Logo from "@/components/Logo";
-import { LogOut, Menu, X, ArrowRight, LayoutDashboard, Shield, Receipt, User as UserIcon } from "lucide-react";
+import { LogOut, Menu, X, ArrowRight, User as UserIcon } from "lucide-react";
 import SideKeys from "./SideKeys";
 
 const NAV_LINKS = [
@@ -17,7 +16,6 @@ const NAV_LINKS = [
 export default function LandingNavbar() {
   const { user, logout } = useAuth();
   const { pathname } = useLocation();
-  const hasReports = useHasReports();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -147,38 +145,8 @@ export default function LandingNavbar() {
             </Link>
           ))}
 
-          {/* Dashboard/Account/Admin — same left-key set as desktop (SideKeys),
-              just inline here since a fixed side rail doesn't fit a phone screen. */}
-          {user && hasReports && (
-            <>
-              <Link
-                to="/dashboard"
-                className={`flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium ${
-                  isActive("/dashboard") ? "bg-muted text-foreground" : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
-                }`}
-              >
-                <LayoutDashboard className="w-4 h-4" /> My Reports
-              </Link>
-              {user.is_admin && (
-                <Link
-                  to="/admin"
-                  className={`flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium ${
-                    isActive("/admin") ? "bg-muted text-foreground" : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
-                  }`}
-                >
-                  <Shield className="w-4 h-4" /> Admin
-                </Link>
-              )}
-              <Link
-                to="/account"
-                className={`flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium ${
-                  isActive("/account") ? "bg-muted text-foreground" : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
-                }`}
-              >
-                <Receipt className="w-4 h-4" /> Account
-              </Link>
-            </>
-          )}
+          {/* My Reports/Account/Admin are tabs inside the Profile page itself now (see
+              Profile.jsx) rather than separate links — one entry point, like SideKeys. */}
           {user && (
             <Link
               to="/profile"

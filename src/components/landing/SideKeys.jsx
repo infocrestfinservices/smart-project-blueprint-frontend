@@ -2,12 +2,12 @@ import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
 import { useHasReports } from "@/lib/useHasReports";
-import { LayoutDashboard, Shield, Receipt, User } from "lucide-react";
+import { User } from "lucide-react";
 
-// Small pill "keys" stacked down the left edge of the screen — replaces the
-// Dashboard/Account/Admin buttons that used to crowd the top navbar and
-// overlap the centered nav at in-between widths. Only earns its place once
-// the user actually has a report to look at.
+// A single pill on the left edge, pointing at /profile — My Reports, Account and Admin
+// used to each get their own pill here; they're now tabs inside the Profile page itself
+// (the way most apps do it), so one entry point is all the nav needs. Only earns its
+// place once the user actually has a report to look at.
 export default function SideKeys() {
   const { user } = useAuth();
   const { pathname } = useLocation();
@@ -16,9 +16,6 @@ export default function SideKeys() {
   if (!user || !hasReports) return null;
 
   const items = [
-    { label: "My Reports", to: "/dashboard", icon: LayoutDashboard },
-    ...(user.is_admin ? [{ label: "Admin", to: "/admin", icon: Shield }] : []),
-    { label: "Account", to: "/account", icon: Receipt },
     { label: "Profile", to: "/profile", icon: User },
   ];
 

@@ -34,8 +34,14 @@ const COLUMNS = [
 ];
 
 export default function LandingFooter() {
+  // The "dark" class here scopes just this subtree to the dark palette in index.css
+  // (its `.dark { --background: ...; }` overrides apply to ANY element carrying the
+  // class, not only <html>) — so the footer band is always the dark theme, independent
+  // of whatever light/dark mode the rest of the page is currently in. Every color below
+  // still comes from the same bg-background/text-foreground/border tokens everything
+  // else uses, so it stays one design system rather than a one-off hardcoded palette.
   return (
-    <footer className="border-t bg-card/50">
+    <footer className="dark border-t border-border bg-background text-foreground">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-14">
         <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
           <div className="col-span-2">

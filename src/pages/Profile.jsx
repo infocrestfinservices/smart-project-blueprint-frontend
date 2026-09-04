@@ -76,7 +76,7 @@ export default function Profile() {
           </div>
         ) : (
           <Tabs defaultValue="basic" className="mt-8">
-            <TabsList className="grid grid-cols-2 sm:grid-cols-5 h-auto gap-1 bg-muted/40 p-1">
+            <TabsList className={`grid grid-cols-2 h-auto gap-1 bg-muted/40 p-1 ${profile.is_admin ? "sm:grid-cols-6" : "sm:grid-cols-5"}`}>
               <TabsTrigger value="basic" className="gap-1.5 text-xs sm:text-sm py-2">
                 <User className="w-3.5 h-3.5" /> Basic Info
               </TabsTrigger>
@@ -92,6 +92,11 @@ export default function Profile() {
               <TabsTrigger value="settings" className="gap-1.5 text-xs sm:text-sm py-2">
                 <SettingsIcon className="w-3.5 h-3.5" /> Settings
               </TabsTrigger>
+              {profile.is_admin && (
+                <TabsTrigger value="admin" className="gap-1.5 text-xs sm:text-sm py-2">
+                  <Shield className="w-3.5 h-3.5" /> Admin
+                </TabsTrigger>
+              )}
             </TabsList>
 
             <TabsContent value="basic" className="mt-6">
@@ -109,6 +114,11 @@ export default function Profile() {
             <TabsContent value="settings" className="mt-6">
               <SettingsTab profile={profile} onChange={refresh} logout={logout} />
             </TabsContent>
+            {profile.is_admin && (
+              <TabsContent value="admin" className="mt-6">
+                <AdminTab />
+              </TabsContent>
+            )}
           </Tabs>
         )}
       </main>
@@ -527,6 +537,29 @@ function BillingTab() {
           </p>
         )}
       </div>
+    </div>
+  );
+}
+
+/* ───────────────────────── Admin (staff only) ───────────────────────── */
+
+function AdminTab() {
+  return (
+    <div className="border rounded-xl p-5 flex items-center justify-between gap-4">
+      <div className="flex items-center gap-3">
+        <div className="p-2.5 rounded-lg bg-primary/10">
+          <Shield className="w-5 h-5 text-primary" />
+        </div>
+        <div>
+          <p className="font-semibold text-sm">Admin panel</p>
+          <p className="text-xs text-muted-foreground">
+            Users, plans, coupons and the rest of the staff console.
+          </p>
+        </div>
+      </div>
+      <Button asChild className="gap-1.5 shrink-0">
+        <Link to="/admin">Open <ExternalLink className="w-3.5 h-3.5" /></Link>
+      </Button>
     </div>
   );
 }
